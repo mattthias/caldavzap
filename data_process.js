@@ -338,17 +338,16 @@ function processRule(vcalendar,start,pars,dates,frequency,deadLine,interval,uid,
 							newDates.splice(newDates.length,0,new Date(date.getTime()));
 					}
 			}
-			else
+			else if(frequency>5)
 			{
 				pars.splice(pars.length,0,'BYMONTH='+(eventStart.getMonth()+1)+'');
 				return processRule(vcalendar.replace(ruleString,ruleString+=';BYMONTH='+(eventStart.getMonth()+1)+''),start,pars,newDates,frequency,deadLine,interval,uid,rCount,eventStart,wkst);
 			}
-		/*	else
+			else
 			{
 				var checkDate = new Date(eventStart.getTime());
 				while(checkDate < deadLine)
 				{
-				
 					for(var j=0;j<byMonthDayList.length;j++)
 					{
 						var date = new Date(checkDate.getTime());
@@ -360,15 +359,13 @@ function processRule(vcalendar,start,pars,dates,frequency,deadLine,interval,uid,
 							date.setFullYear(date.getFullYear() + 1);
 							date.setDate(testValue + 1);
 						}
-						
-						if(checkDate.getMonth()!=date.getMonth() || date<start)
+						if(date<start)
 							continue;
 						newDates.splice(newDates.length,0,new Date(date.getTime()));
 					}
-					checkDate.setFullYear(checkDate.getFullYear()+1);
-				}	
-			
-			}*/
+					checkDate.setMonth(checkDate.getMonth()+1);
+				}
+			}
 		}
 	}
 	else if((pars.indexElementOf('BYDAY=')!=-1))
@@ -4125,9 +4122,8 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								{
 									var intOffset=valOffsetFrom.getSecondsFromOffset()*1000;
 									ut.setTime(ut.getTime()+intOffset);
-									untilDate = new Date(ut.getTime());
 								}
-
+								untilDate = new Date(ut.getTime());
 							}
 							else
 							{
@@ -4283,7 +4279,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								var count=untilDate-varDate;
 							else
 								var count = until - realRepeatCount;
-							if(count<0)
+							if(isUntilDate&&count<0 || !isUntilDate&&count<=0)
 								break;
 							else
 							{

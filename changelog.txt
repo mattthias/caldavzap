@@ -1,5 +1,10 @@
 CalDavZAP Changelog
 
+version 0.9.1.2 [2013-08-05]:
+- fixed processing of recurrent events (special recurrences - correct BYMONTHDAY processing)
+- fixed globalTimeFormatBasic configuration option processing (it is no longer ignored)
+- removed old and unused configuration options (globalDefaultDisplayTodo and globalTodoHideExpired)
+
 version 0.9.1.1 [2013-07-30]:
 - fixed processing of recurrent events with until date
 - fixed saving of until dates values in recurrent events

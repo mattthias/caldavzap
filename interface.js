@@ -2544,7 +2544,7 @@ function loadRepeatEvents(inputRepeatEvent)
 				var count=untilDate-varDate;
 			else
 				var count = inputRepeatEvent.realUntil - inputRepeatEvent.realRepeatCount;
-			if(count<0)
+			if(untilDate&&count<0 || !untilDate&&count<=0)
 				break;
 			else
 			{
@@ -3014,7 +3014,7 @@ function loadRepeatTodo(inputRepeatTodo)
 					var count=untilDate-varDate;
 				else
 					var count = inputRepeatTodo.realUntil - inputRepeatTodo.realRepeatCount;
-				if(count<=0)
+				if(untilDate&&count<0 || !untilDate&&count<=0)
 					break;
 				else
 				{
@@ -4440,7 +4440,7 @@ function initFullCalendar()
 			list: (typeof globalSessionAMPMFormat!='undefined' && globalSessionAMPMFormat) ? 'h:mm TT{ - h:mm TT}' : 'H:mm{ - H:mm}',
 			listFull: (typeof globalSessionAMPMFormat!='undefined' && globalSessionAMPMFormat) ? localization[globalInterfaceLanguage]._default_time_format_list_ + ' h:mm TT{ - ' + localization[globalInterfaceLanguage]._default_time_format_list_ +' h:mm TT}' : localization[globalInterfaceLanguage]._default_time_format_list_ + ' H:mm{ - ' + localization[globalInterfaceLanguage]._default_time_format_list_ + ' H:mm}',
 			listFullAllDay: localization[globalInterfaceLanguage]._default_time_format_list_ + '{ - ' + localization[globalInterfaceLanguage]._default_time_format_list_ + '}',
-			'': (typeof globalSessionAMPMFormat!='undefined' && globalSessionAMPMFormat) ? 'h:mmT{-h:mmT}' : 'H:mm{-H:mm}',
+			'': (typeof globalTimeFormatBasic!='undefined' && globalTimeFormatBasic!=null) ? globalTimeFormatBasic : (typeof globalSessionAMPMFormat!='undefined' && globalSessionAMPMFormat) ? 'h:mmT{-h:mmT}' : 'H:mm{-H:mm}',
 		},
 		axisFormat: (typeof globalSessionAMPMFormat!='undefined' && globalSessionAMPMFormat) ? 'h:mm TT' : 'H:mm',
 		buttonText: {
