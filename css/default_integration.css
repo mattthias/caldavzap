@@ -1,0 +1,89 @@
+.integration_d
+{
+	position: absolute;
+	display: none;
+	overflow: hidden;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	width: 49px;
+	height: 100%;
+	background: #2d2d2d;
+	color: #FFFFFF;
+	border-right: 1px solid #C0C0C0;
+	z-index: 26;
+}
+
+.integration_d img
+{
+	display: none;
+	height: 40px;
+	width: 40px;
+	padding: 10px 5px;
+	cursor: pointer;
+}
+
+#resourceCalDAV_h, #resourceCalDAVTODO_h, .System > #ResourceCalDAVList, .System > #ResourceCalDAVTODOList, #timezoneWrapper, #timezoneWrapperTODO
+{
+	left: 50px;
+}
+
+#main, #main_h, #searchForm, #mainTODO, #main_h_TODO, #searchFormTODO
+{
+	left: 274px;
+}
+
+#MainLoader, #EventDisabler, #TodoDisabler, #AlertDisabler
+{
+	left: 50px;
+}
+
+#CalendarLoader, #ResizeLoader, #CalendarLoaderTODO, #ResizeLoaderTODO
+{
+	left: 275px;
+}
+
+#todoForm_h, #todoForm, #todoLoader
+{
+	left: 694px;
+}
+
+.System > div.resourcesCardDAV_d, .System > #ResourceCardDAVList, .System > #ResourceCardDAVListOverlay
+{
+	left: 50px;
+}
+
+.System > div.company_d, .System > #SearchBoxCompany, .System > #ABListCompany, .System > #ABListOverlayCompany, .System > div.collection_d, .System > #SearchBox, .System > #ABList, .System > #ABListOverlay
+{
+	left: 275px;
+}
+
+.System > div.contact_d, #ABMessage, .System > #ABContact, .System > #ABContactOverlay
+{
+	left: 526px;
+}
+
+.System > div.resourcesSettings_d, .System > #ResourceSettingsList
+{
+	left: 50px;
+}
+
+.System > div.settings_d, #SettingsMessage, .System > #SettingsForm, .System > #SettingsFormOverlay
+{
+	left: 275px;
+}
+
+.System > div.filters_d, .System > #FilterList
+{
+	left: 50px;
+}
+
+.System > div.projects_d, .System > #ProjectList, .System > #SearchBoxProject, .System > #ProjectsData, #ProjectListOverlay
+{
+	left: 275px;
+}
+
+.System > div.project_d, .System > #ProjectForm, .System > #ProjectEventForm, .System > #ProjectEvents
+{
+	left: 526px;
+}

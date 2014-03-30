@@ -1,0 +1,130 @@
+CalDavZAP Changelog
+
+version 0.9.1 [2013-07-26]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
+- note: this release contains changed configuration options (always use the latest config.js)
+- configuration - changed globalAppleRemindersMode option values - newly supported values are iOS6, iOS7, true (it is set to latest supported iOS - in this case iOS7) and false (see config.js)
+- added Turkish localization (tr_TR) - thanks Selcuk Pultar
+- updated localizations - thanks Michael Rasmussen [da_DK], Marten Gajda [de_DE], John Fischer [fr_FR], Luca Ferrario [it_IT] and Johan Vromans [nl_NL]
+- added additional automatic fixes for invalid events
+- added support for STATUS attribute
+- added support for CALSCALE attribute (only GREGORIAN is supported; missing attribute = GREGORIAN)
+- added automatic change of "time to" after "time from" change (preserve the event/todo duration)
+- added support for dynamic height of NOTE field - thanks http://www.jacklmoore.com/autosize/
+- fixed problem with always visible completed todos when globalAppleRemindersMode enabled
+- fixed window resize callback
+- fixed incorrect detection of privileges for binded resources
+- fixed processing of RECURRENCE-ID in events/todos
+- fixed parsing of todo/event components with same UID in subscribed calendars
+- fixed parsing of due date timezone
+- fixed processing of DURATION value for allday events
+- fixed problem with multiple URL and LOCATION attributes
+- fixed handling of VERSION attribute
+- fixed repeating todo and event processing
+- fixed timezone picker problems
+- updated jQuery to 2.0.3
+- changed default "due date" for todos to date selected in the todo calendar
+- other improvements and fixes
+
+version 0.9.0 [2013-06-27]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
+- note: if you use DAViCal with cross-domain setup see the modified Apache configuration in misc/config_davical.txt (added Access-Control-Expose-Headers header)
+- note: if you use OS X Calendarserver it is recommended to re-patch your installation (added Access-Control-Expose-Headers header; see misc/readme_osx.txt)
+- note: this release contains new and also changed configuration options (always use the latest config.js)
+- configuration - added globalSettingsType option - set the destination for client settings on server (useful if your server not allows to store properties to "principal-URL" but allows to store them to "calendar-home-set")
+- configuration - added checkContentType option into globalAccountSettings and globalNetworkCheckSettings - enables content-type checking for server response (only objects with proper content-type are inserted into interface) - if you cannot see data in the interface you may try to disable it
+- configuration - added globalAppleRemindersMode option (enabled by default) - it enables workarounds for Apple clients (see config.js)
+- configuration - added globalIgnoreCompletedAlarms option (enabled by default) - it disables alarm for completed todos (see config.js)
+- MAJOR performance improvements
+- added support for Cyrus server - thanks Ken Murchison
+- added support for additional CalDAV servers (should work with the same servers as CardDavMATE)
+- added completely new and shiny interface for todos
+- added support for additional todo properties and repeating todos
+- added support for PRODID property for both events and todos
+- added new custom formats for time and day strings based on currently selected localization
+- added Hungarian localization (hu_HU)
+- changed cache.manifest - cache all image files in HTML5 cache
+- changed ordering of calendars in selectbox (globalSortAlphabet is used)
+- changed internal logic of resource loading, synchronization and version check functionality (to prepare for integration with CardDavMATE)
+- changed minimum height of events to height of "30 minutes" event
+- fixed Firefox placeholder colors
+- fixed and updated various localization strings
+- fixed events and todos sometimes being editable even with forceReadOnly flag enabled
+- fixed various timezone processing issues
+- fixed visual event form bug when using repeat option with weekend/business days
+- fixed current time indicator error during day/week transition
+- fixed timezone picker (at the bottom of the resource list) - it is no longer editable using keyboard navigation while editing event/todo
+- fixed wrong ajax parameter which may cause warnings in server log
+- fixed an issue when timezone picker was not always visible after login
+- updated left menu with new icons (thanks Kelecsenyi Timotej - http://timotejos.com/)
+- updated jQuery to 2.0.2 (and related fixes)
+- updated jQuery-UI to 1.10.3 (and related fixes)
+- updated auth module to reflect the latest changes in configuration options
+- updated misc directory (it is the same as in CardDavMATE)
+- updated localizations - thanks Marten Gajda [de_DE], John Fischer [fr_FR], Luca Ferrario [it_IT] and Johan Vromans [nl_NL] (note: Danish [da_DK] localization contains some untranslated strings)
+- LOT of other improvements and fixes
+
+version 0.8.1.1 [2013-02-25]:
+- fixed multiple bugs related to processing of recurrent events
+- fixed forced lower case problem of some strings in the interface
+- other minor fixes
+
+version 0.8.1 [2013-02-21]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache)
+- added support for background calendars in day view event list
+- added missing misc directory
+- fixed syntax error if configured using globalAccountSettings
+- fixed issues with delegation proccessing if multiple accounts are configured
+- fixed issue with pinned tab in Firefox (manual reloading is not required anymore)
+- fixed privileges for binded calendars - these are now strictly read only
+- fixed wrong proccessing of number of occurrences for recurrent events
+- fixed issue where readonly events could still be edited via drag and drop and resizing
+- fixed and optimized the "Revert" button functionality
+- fixed issue with saving empty URL property
+- fixed incorrect alarm box position
+- fixed bad positioning of error image for "repeat end" date field
+
+version 0.8.0 [2013-02-13]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache)
+- note: this release contains new configuration option (always use the latest config.js)
+- configuration - added globalUseJqueryAuth option - use jQuery .ajax() auth or custom header for HTTP basic auth (default); set this option to true if your server uses digest auth (note: you may experience auth popups on some browsers)
+- configuration - added globalRemoveUnknownTimezone (disabled by default) - it removes non-standard/unknown timezones if event/todo is edited (and saved)
+- configuration - added delegation option into globalAccountSettings and globalNetworkCheckSettings (sets additional delegated resources - if true then delegation is enabled for all available resources; if false (default) then delegation is disabled; if an array of URL encoded resources or regexes (for example: ['/caldav.php/user/', '/caldav.php/user%40domain.com/', new RegExp('^/caldav.php/a[b-x].+/$', 'i')] then delegation is enabled for all specified resources
+- configuration - added ignoreAlarms option into globalAccountSettings and globalNetworkCheckSettings (defines an array calendars with disabled alarm - if true then all alarms are ignored; if false (default) then alarms are enabled; if an array of URL encoded collections or regexes (for example: ['/caldav.php/user/collection/', '/caldav.php/user%40domain.com/collection/', new RegExp('^/caldav.php/user/collection[0-9]/$', 'i')] then alarm is disabled for all specified resources
+- configuration - added backgroundCalendars option into globalAccountSettings and globalNetworkCheckSettings - defines an array of background calendars - if there is at least one event defined for the given day in a background calendar, the background color for that day will be pink/light-red; to use this feature define an array of URL encoded collections or regexes (for example: ['/caldav.php/user/collection/', '/caldav.php/user%40domain.com/collection/', new RegExp('^/caldav.php/user/collection[0-9]/$', 'i')])
+- configuration - added user defined time format support for events via globalTimeFormatBasic and globalTimeFormatAgenda variables (see config.js)
+- configuration - changed forceReadonly property proccessing - URL encoded collections and also regexes are now supported (see config.js)
+- configuration - changed globalCalendarSelected variable proccessing - full UID (for example: http://username@domain.com:8080/caldav.php/user/calendar/) and also UID matching regexes are now supported (see config.js)
+- configuration - date and time formats are now predefined for each localization - if you want to use custom date and time formats instead of predefined formats (defined by localizations) use globalAMPMFormat and globalDatepickerFormat variables (commented out by default)
+- added Danish localization (da_DK) - thanks Niels Bo Andersen
+- added German localization (de_DE) - thanks Marten Gajda and Thomas Scheel
+- added Italian localization (it_IT) - thanks Luca Ferrario
+- added French localization (fr_FR) - thanks John Fischer
+- added Dutch localization (nl_NL) - thanks Johan Vromans
+- added additional functionality for today button - now it scrolls the calendar to ensure that the today slot is visible in the top of the view
+- added support for fallback to PROPFIND if REPORT is not supported and server returns incorrect 403 error code (instead of 400 or 501)
+- added support for events without DTEND or DURATION values
+- added support for DURATION property
+- added support for CLASS property (Privacy)
+- added support for TRANSP property (Availability)
+- added support for URL property
+- updated timezone.js to latest IANA timezone database
+- updated auth module to reflect the latest changes in configuration options
+- changed button label from "All future events" to "This and all future events" for more clarity
+- changed the "repeat end" option text from "after" to "occurences" for more clarity (event ends after X occurences, including the first one)
+- changed event listing in day view - now it scrolls to the very top if the currently displayed day is the first day of month (the button for loading the previous month is now visible)
+- changed event listing in day view - now it scrolls to the closest following day if the currently displayed day is not found (no events exist for that day)
+- fixed login => logout => relogin as different user bug
+- fixed "Unable to save" bug when creating/editing an event/todo
+- fixed cache_update.sh - replaced sed by ed due to cross OS compatibility problems
+- fixed duplicate scrollbar problem in week and day views
+- fixed useless revert button - it is no longer visible when creating a new event or todo
+- fixed position of the error image in todo completed field
+- fixed processing of UNTIL values in repeating events
+- fixed EXDATE value processing and saving
+- fixed January specific bug
+- fixed BYMONTH value processing - anniversaries
+- other improvements and fixes
+
+version 0.7.0 [2012-11-20]:
+- initial public release
