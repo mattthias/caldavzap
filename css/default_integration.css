@@ -8,19 +8,27 @@
 	left: 0px;
 	width: 49px;
 	height: 100%;
-	background: #2d2d2d;
+	background: #f0f0f0;
 	color: #FFFFFF;
-	border-right: 1px solid #C0C0C0;
+	border-right: 1px solid #c0c0c0;
 	z-index: 26;
+	padding-top: 3px;
 }
 
 .integration_d img
 {
 	display: none;
-	height: 40px;
-	width: 40px;
-	padding: 10px 5px;
+	height: 36px;
+	width: 36px;
+	padding: 5px 7px;
 	cursor: pointer;
+}
+
+#intBlank
+{
+	height: 36px;
+	width: 36px;
+	padding: 5px 7px;
 }
 
 #resourceCalDAV_h, #resourceCalDAVTODO_h, .System > #ResourceCalDAVList, .System > #ResourceCalDAVTODOList, #timezoneWrapper, #timezoneWrapperTODO
@@ -33,19 +41,24 @@
 	left: 274px;
 }
 
-#MainLoader, #EventDisabler, #TodoDisabler, #AlertDisabler
+#MainLoader, #EventDisabler, #TodoDisabler, #AlertDisabler, #ProjectsDisabler
 {
 	left: 50px;
 }
 
-#CalendarLoader, #ResizeLoader, #CalendarLoaderTODO, #ResizeLoaderTODO
+#CalendarLoader, #ResizeLoader, #CalendarLoaderTODO
 {
 	left: 275px;
 }
 
-#todoForm_h, #todoForm, #todoLoader
+#todoForm_h, #todoColor, #todoLoader
 {
 	left: 694px;
+}
+
+#todoForm
+{
+	left: 697px;
 }
 
 .System > div.resourcesCardDAV_d, .System > #ResourceCardDAVList, .System > #ResourceCardDAVListOverlay
@@ -53,14 +66,19 @@
 	left: 50px;
 }
 
-.System > div.company_d, .System > #SearchBoxCompany, .System > #ABListCompany, .System > #ABListOverlayCompany, .System > div.collection_d, .System > #SearchBox, .System > #ABList, .System > #ABListOverlay
+.System > div.collection_d, .System > #SearchBox, .System > #ABList, .System > #ABListOverlay
 {
 	left: 275px;
 }
 
-.System > div.contact_d, #ABMessage, .System > #ABContact, .System > #ABContactOverlay
+.System > div.contact_d, .System > #ABContactColor, .System > #ABContactOverlay, .System > #ABMessage
 {
 	left: 526px;
+}
+
+.System > #ABContact
+{
+	left: 529px;
 }
 
 .System > div.resourcesSettings_d, .System > #ResourceSettingsList
@@ -68,22 +86,22 @@
 	left: 50px;
 }
 
-.System > div.settings_d, #SettingsMessage, .System > #SettingsForm, .System > #SettingsFormOverlay
+.System > div.settings_d, .System > #SettingsForm, .System > #SettingsFormOverlay
 {
 	left: 275px;
 }
 
-.System > div.filters_d, .System > #FilterList
+.System > div.filters_d, .System > div.statistics_d, .System > #FilterList, .System > #ProjectsData, #SystemProjectsLock, #ProjectListDisabler
 {
 	left: 50px;
 }
 
-.System > div.projects_d, .System > #ProjectList, .System > #SearchBoxProject, .System > #ProjectsData, #ProjectListOverlay
+.System > div.projects_d, .System > #ProjectList, .System > #SearchBoxProject, #ProjectListOverlay
 {
-	left: 275px;
+	left: 375px;
 }
 
-.System > div.project_d, .System > #ProjectForm, .System > #ProjectEventForm, .System > #ProjectEvents
+.System > div.project_d, .System > #ProjectForm, #ProjectFormLoader, .System > #ProjectEvents, .System > #ProjectEventsHeader, #ActivityListDisabler, #ProjectFormMessage
 {
-	left: 526px;
+	left: 626px;
 }

@@ -1,6 +1,6 @@
 /*
 CalDavZAP - the open source CalDAV Web Client
-Copyright (C) 2011-2013
+Copyright (C) 2011-2014
     Jan Mate <jan.mate@inf-it.com>
     Andrej Lezo <andrej.lezo@inf-it.com>
     Matej Mihalik <matej.mihalik@inf-it.com>
@@ -267,6 +267,29 @@ vCalendar.pre['contentline_VERSION']=RegExp('\r\n'+vCalendar.re['contentline_VER
 vCalendar.re['contentline_CALSCALE']='(?:'+vCalendar.re['group']+'\\.)?CALSCALE:'+vCalendar.re['text-value']+vCalendar.re['CRLF'];
 vCalendar.pre['contentline_CALSCALE']=RegExp('\r\n'+vCalendar.re['contentline_CALSCALE'],'mi');
 
+vCalendar.pre['+/-number']=RegExp('[-+]?[0-9]*','mi');
+vCalendar.pre['hrefRex']=RegExp('^(https?://)(.*)', 'i');
+vCalendar.pre['uidParts']=RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@([^/]+)(.*/)([^/]+/)([^/]*)', 'i');
+vCalendar.pre['accountUidParts']=RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@([^/]+)(.*/)', 'i');
+vCalendar.pre['escapeRex']=RegExp('(,|;|\\\\)','g');
+vCalendar.pre['escapeRex2']=RegExp('\\n','g');
+vCalendar.pre['compressNewLineRex']=RegExp('(\\r\\n|\\n|\\r)+','gm');
+vCalendar.pre['numberPortRex']=RegExp(':[0-9]+$');
+vCalendar.pre['domainRex']=RegExp('^[^.]+\\.');
+vCalendar.pre['domainNameRex']=RegExp('^([^.]+\\.)*?((?:[^.]+\\.)?[^.]+)$');
+vCalendar.pre['principalUserNameRex']=RegExp('(@.*)?$');
+vCalendar.pre['loginRex']=RegExp('@.*$');
+vCalendar.pre['HRex']=RegExp('%H', 'g');
+vCalendar.pre['hRex']=RegExp('%h', 'g');
+vCalendar.pre['DRex']=RegExp('%D', 'g');
+vCalendar.pre['dRex']=RegExp('%d', 'g');
+vCalendar.pre['PRex']=RegExp('%P', 'g');
+vCalendar.pre['pRex']=RegExp('%p', 'g');
+vCalendar.pre['URex']=RegExp('%U', 'g');
+vCalendar.pre['uRex']=RegExp('%u', 'g');
+vCalendar.pre['xRex']=RegExp('%x', 'g');
+vCalendar.pre['spaceRex']=RegExp(' ','g')
+vCalendar.pre['hrefValRex']=RegExp('.*/', '')
 //---------VEVENT-----------------------------------------------------------------------------
 
 vCalendar.tplC['begin']='##:::##group_wd##:::##BEGIN:VCALENDAR\r\n';

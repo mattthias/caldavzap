@@ -1,5 +1,41 @@
 CalDavZAP Changelog
 
+version 0.10.0 [2014-01-22]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
+- note: this release contains new, changed and also removed configuration options (always use the latest config.js)
+- configuration - added globalEventStartPastLimit and globalEventStartFutureLimit for time-range filtering - note: for servers without time-range filtering support you need to set both variables to null (see config.js)
+- configuration - replaced globalInactiveCollections and globalInactiveTodoCollections by globalActiveCalendarCollections and globalActiveTodoCollections (see config.js)
+- configuration - removed globalResourceHeaderShowLogin option - it is replaced by much more flexible hrefLabel option in globalAccountSettings and globalNetworkCheckSettings (see config.js)
+- configuration - removed syncInterval option from globalAccountSettings and globalNetworkCheckSettings - detection of sync-token changes is now performed by ONE request instead of N (number of collections) - use globalSyncResourcesInterval instead
+- configuration - removed crossDomain and withCredentials options from default globalAccountSettings, globalNetworkCheckSettings and globalNetworkAccountSettings - both settings are still available but there is NO REASON to use them (crossDomain is detected automatically, and I've never seen anyone who understand when to use withCredentials /there is NO REASON to set it to true!/)
+- major improvements and changes in sychronization code - MUCH reduced number of HTTP request to server
+- major design changes (including the open source Roboto font)
+- major readme.txt update with detailed descriptions of most common setup problems
+- added support for time-range filtering (requires server with time-range filtering support) - EXTREME performance improvements
+- added workaround for buggy HTML5 cache handling in the latest Firefox
+- added "equivalency" for todo filters (globalAppleRemindersMode) - NEEDS-ACTION, IN-PROGRESS and CANCELLED are processed as NEEDS-ACTION
+- added calendar color indicator for event/todo forms (unified with the upcoming CardDavMATE)
+- added handling of unsupported settings
+- added support for 'headervalue' collection property (namespace: http://inf-it.com/ns/dav/) - useful for collection grouping
+- added new overlay with refresh button, when cache manifest change is detected (it forces users to reload the page)
+- added support/mapping for alternative timezone names - e.g. 'US/Pacific' (legacy name) is mapped to 'America/Los_Angeles' (current name)
+- changed resource list design (unified with the upcoming CardDavMATE)
+- changed todo processing if globalAppleRemindersMode is enabled - todos with start and no end are processed as simple todos
+- changed displaying of repeating todo confirm question
+- changed time-range filtering for todos - all todos from future are loaded from server initially
+- updated French [fr_FR] localization - thanks Jean-Christophe Bach
+- optimized window resizing functionality
+- fixed local timezone processing
+- fixed loader hanging after login if subscribed calendar list is empty
+- fixed generating of repeating events in future
+- fixed RRULE processing if specified in YYYYMMDD format
+- fixed displaying of arrows for repeating events
+- fixed sorting of resources
+- fixed various search issues
+- disabled opening of new event/todo form if only read-only collections are present
+- removed jQuery source mapping file reference
+- LOT of other improvements and fixes
+
 version 0.9.1.2 [2013-08-05]:
 - fixed processing of recurrent events (special recurrences - correct BYMONTHDAY processing)
 - fixed globalTimeFormatBasic configuration option processing (it is no longer ignored)

@@ -1,3 +1,11 @@
+# To use this file it is usually required to configure your Apache installation 
+#  and add the following lines into your config (without the # character):
+#<Directory /client/installation/directory/>
+#    AllowOverride FileInfo Limit
+#    Order allow,deny
+#    allow from all
+#</Directory>
+
 # You must enable mod_headers and mod_mime for these directives (optionally you can also enable mod_deflate)!
 <IfModule mod_expires.c>
     ExpiresActive On

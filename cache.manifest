@@ -1,9 +1,45 @@
 CACHE MANIFEST
-#V 20130805160403126592549
+#V 20140122122729492241017
 
 CACHE:
+fonts/Roboto-BoldItalic-webfont.eot
+fonts/Roboto-BoldItalic-webfont.svg
+fonts/Roboto-BoldItalic-webfont.ttf
+fonts/Roboto-BoldItalic-webfont.woff
+fonts/Roboto-Bold-webfont.eot
+fonts/Roboto-Bold-webfont.svg
+fonts/Roboto-Bold-webfont.ttf
+fonts/Roboto-Bold-webfont.woff
+fonts/Roboto-Italic-webfont.eot
+fonts/Roboto-Italic-webfont.svg
+fonts/Roboto-Italic-webfont.ttf
+fonts/Roboto-Italic-webfont.woff
+fonts/Roboto-LightItalic-webfont.eot
+fonts/Roboto-LightItalic-webfont.svg
+fonts/Roboto-LightItalic-webfont.ttf
+fonts/Roboto-LightItalic-webfont.woff
+fonts/Roboto-Light-webfont.eot
+fonts/Roboto-Light-webfont.svg
+fonts/Roboto-Light-webfont.ttf
+fonts/Roboto-Light-webfont.woff
+fonts/Roboto-MediumItalic-webfont.eot
+fonts/Roboto-MediumItalic-webfont.svg
+fonts/Roboto-MediumItalic-webfont.ttf
+fonts/Roboto-MediumItalic-webfont.woff
+fonts/Roboto-Medium-webfont.eot
+fonts/Roboto-Medium-webfont.svg
+fonts/Roboto-Medium-webfont.ttf
+fonts/Roboto-Medium-webfont.woff
+fonts/Roboto-Regular-webfont.eot
+fonts/Roboto-Regular-webfont.svg
+fonts/Roboto-Regular-webfont.ttf
+fonts/Roboto-Regular-webfont.woff
 images/add_cal.svg
 images/add_cal_white.svg
+images/arrow_next_red.svg
+images/arrow_next.svg
+images/arrow_prev_red.svg
+images/arrow_prev.svg
 images/banner_addressbook.svg
 images/banner_calendar.svg
 images/banner_logout.svg
@@ -18,9 +54,8 @@ images/dp_right.svg
 images/error_b.svg
 images/error_w.svg
 images/ff_login.svg
-images/go_left1.svg
-images/go_right1.svg
 images/in_progress_b.svg
+images/in_progress_dr.svg
 images/in_progress_r.svg
 images/in_progress_w.svg
 images/loadinfo.gif
@@ -62,6 +97,7 @@ images/logo_cdz_31.svg
 images/logo.svg
 images/logout.svg
 images/needs_action_b.svg
+images/needs_action_dr.svg
 images/needs_action_r.svg
 images/needs_action_w.svg
 images/new_item.svg
@@ -70,9 +106,12 @@ images/read_only_w.svg
 images/remove_cal.svg
 images/remove_cal_white.svg
 images/reset_b.svg
+images/reset_dr.svg
+images/reset_drw.svg
 images/reset_r.svg
 images/reset_rw.svg
 images/reset_w.svg
+images/resources.svg
 images/search.svg
 images/searchWhiteNew.svg
 images/select_bg_black.svg
@@ -82,6 +121,8 @@ images/select_black.svg
 images/select_dis.svg
 images/select.svg
 images/success_b.svg
+images/success_dr.svg
+images/success_drw.svg
 images/success_r.svg
 images/success_rw.svg
 images/success_w.svg

@@ -10,14 +10,14 @@
 	$config['accounts']=array('resources'=>array());
 
 	// note: if you want to use regex values, then use one of the following formats (the second example is with regex modifier): 're:.*someregex.*[0-9]$' or 're|i:.*someregex.*[0-9]$'
+	// note: 'crossdomain' and 'withcredentials' are still available but there is NO REASON to use them (crossDomain is detected automatically, and I've never seen anyone who understand when to use withCredentials /there is NO REASON to set it to true!/)
+	// note: 'syncinterval' was removed - use globalSyncResourcesInterval in config.js instead
 	$config['accounts']['resources'][]=array(
 		'resource'=>array(
 			'type'=>array('calendar'=>''),
 			'href'=>'http://www.server.com:80/caldav.php/'.$_SERVER['PHP_AUTH_USER'].'/',
-			'hreflabel'=>'',		// if undefined or empty href value is used (see above)
-			'crossdomain'=>'null',		// set to true for different protocol/server/port origin (default is null = autodetect)
+			'hreflabel'=>'null',		// if undefined or empty href value is used (see above)
 			'forcereadonly'=>'null',	// see auth/doc/example_config_response.xml for proper use, for example: 'forcereadonly'=>array(array('collection'=>'/caldav.php/user/collection/'), array('collection'=>'re:^/caldav.php/user/collection[0-9]/$')),
-			'withcredentials'=>'false',	// for experts only (note: if true, Access-Control-Allow-Origin "*" is not allowed)
 			'showheader'=>'true',		// if undefined, empty or not false header is displayed
 			'settingsaccount'=>'true',	// client properties are saved here (note: set it to true only for ONE account)
 			'checkcontenttype'=>'true',	// check content-type in the server response (if you cannot see data in the interface /buggy server response/ you may try to disable it)
@@ -28,7 +28,6 @@
 				'username'=>$_SERVER['PHP_AUTH_USER'],
 				'password'=>$_SERVER['PHP_AUTH_PW']
 			),
-			'syncinterval'=>60000,
 			'timeout'=>30000,
 			'locktimeout'=>10000
 		)
@@ -40,10 +39,8 @@
 		'resource'=>array(
 			'type'=>array('calendar'=>''),
 			'href'=>'http://www.server.com:80/caldav.php/resource/',
-			'hreflabel'=>'',		// if undefined or empty href value is used (see above)
-			'crossdomain'=>'null',		// set to true for different protocol/server/port origin (default is null = autodetect)
+			'hreflabel'=>'null',		// if undefined or empty href value is used (see above)
 			'forcereadonly'=>'null',	// see auth/doc/example_config_response.xml for proper use, for example: 'forcereadonly'=>array(array('collection'=>'/caldav.php/user/collection/'), array('collection'=>'re:^/caldav.php/user/collection[0-9]/$')),
-			'withcredentials'=>'false',	// for experts only (note: if true, Access-Control-Allow-Origin "*" is not allowed)
 			'showheader'=>'true',		// if undefined, empty or not false header is displayed
 			'settingsaccount'=>'false',	// client properties are saved here (note: set it to true only for ONE account)
 			'checkcontenttype'=>'true',	// check content-type in the server response (if you cannot see data in the interface /buggy server response/ you may try to disable it)
@@ -54,7 +51,6 @@
 				'username'=>$_SERVER['PHP_AUTH_USER'],
 				'password'=>$_SERVER['PHP_AUTH_PW']
 			),
-			'syncinterval'=>60000,
 			'timeout'=>30000,
 			'locktimeout'=>10000
 		)

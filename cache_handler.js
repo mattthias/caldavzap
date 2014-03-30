@@ -41,53 +41,39 @@ window.applicationCache.addEventListener('updateready', function(){
 //setInterval(function(){cache.update()}, 10000);*/
 
 // Check if a new cache is available on page load.
-//window.addEventListener('load', function(e){
+window.addEventListener('load', function(e)
+{
+	window.applicationCache.addEventListener('cached', function(e)
+	{
+		if(!isUserLogged)
+			window.location.reload();
+		else
+			$('#cacheDialog').css('display','block');
+	}, false);
 
-window.applicationCache.addEventListener('cached', function(e){
-	if(true)
+	window.applicationCache.addEventListener('updateready', function(e)
 	{
-		// Browser downloaded a new app cache.
-		// Swap it in and reload the page to get the new hotness.
-		window.location.reload();
-	}
-	else
+		if(!isUserLogged)
+			window.location.reload();
+		else
+			$('#cacheDialog').css('display','block');
+	}, false);
+
+	window.applicationCache.addEventListener('obsolete', function(e)
 	{
-		// Manifest didn't changed. Nothing new to server.
-		$('#LoginPage .window').css('display', 'inline-block');
-	}
+		if(!isUserLogged)
+			window.location.reload();
+		else
+			$('#cacheDialog').css('display','block');
+	}, false);
+
+	window.applicationCache.addEventListener('noupdate', function(e)
+	{
+		if(!isUserLogged)
+		{
+			clearInterval(globalCacheUpdateInterval);
+			globalCacheUpdateInterval=setInterval(function(){window.applicationCache.update()}, 300000);
+			//$('#LoginPage .window').css('display', 'inline-block');
+		}
+	}, false);
 }, false);
-
-window.applicationCache.addEventListener('updateready', function(e){
-	if(window.applicationCache.status == window.applicationCache.UPDATEREADY)
-	{
-		// Browser downloaded a new app cache.
-		// Swap it in and reload the page to get the new hotness.
-		window.applicationCache.swapCache();
-		window.location.reload();
-	}
-	else
-	{
-		// Manifest didn't changed. Nothing new to server.
-		$('#LoginPage .window').css('display', 'inline-block');
-	}
-}, false);
-
-window.applicationCache.addEventListener('obsolete', function(e){
-	if(window.applicationCache.status == window.applicationCache.OBSOLETE)
-	{
-		// Browser downloaded a new app cache.
-		// Swap it in and reload the page to get the new hotness.
-		window.location.reload();
-	}
-	else
-	{
-		// Manifest didn't changed. Nothing new to server.
-		$('#LoginPage .window').css('display', 'inline-block');
-	}
-}, false);
-
-window.applicationCache.addEventListener('noupdate', function(e){
-	$('#LoginPage .window').css('display', 'inline-block');
-}, false);
-
-//}, false);
