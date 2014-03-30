@@ -1,5 +1,10 @@
 CalDavZAP Changelog
 
+version 0.9.1.1 [2013-07-30]:
+- fixed processing of recurrent events with until date
+- fixed saving of until dates values in recurrent events
+- fixed parsing of double quoted TZID param values
+
 version 0.9.1 [2013-07-26]:
 - note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
 - note: this release contains changed configuration options (always use the latest config.js)

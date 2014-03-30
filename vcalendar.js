@@ -108,12 +108,12 @@ function EventList()
 		if(isEvent)
 		{
 			// find the index where to insert the new event
-			var res=getvCalendarstart(inputEvent);		
-
+			var res=getvCalendarstart(inputEvent);
 			if(res!=false && res!=-1 && res!=undefined && res!=null)
 				inputEvent.sortStart=res;
 			else
 			{
+				console.log("Error: '"+inputEvent.uid+"': cannot parse vEvent");
 				checkEventLoader(globalResourceCalDAVList.counterList[rid], true);
 				return false;
 			}
@@ -142,12 +142,12 @@ function EventList()
 				if(!isEvent)
 				{
 					if(vcalendarTodoData(inputCollection, inputEvent, true) == false)
-						console.log("Error: '"+inputEvent.uid+"': cannot parse vTodo");	
+						console.log("Error: '"+inputEvent.uid+"': cannot parse vTodo");
 				}
 				else
 				{
 					if(vcalendarToData(inputCollection, inputEvent, true) == false)
-						console.log("Error: '"+inputEvent.uid+"': cannot parse vEvent");	
+						console.log("Error: '"+inputEvent.uid+"': cannot parse vEvent");
 				}
 				
 				if(isEvent)
