@@ -87,6 +87,7 @@ var globalNetworkCheckSettings={href: location.protocol+'//'+location.hostname+(
 //   nl_NL (Nederlands [Dutch]; thanks Johan Vromans)
 //   sk_SK (Slovenčina [Slovak])
 //   tr_TR (Türkçe [Turkish]; thanks Selcuk Pultar)
+//   uk_UA (Українська [Ukrainian]; thanks Serge Yakimchuck)
 var globalInterfaceLanguage='en_US';
 
 // if defined and not empty then only languages listed here are shown at the login screen (for example: ['en_US','sk_SK']),
@@ -97,7 +98,7 @@ var globalInterfaceCustomLanguages=[];
 // JavaScript localeCompare() or custom alphabet for data sorting
 //  custom alphabet is used by default because the JavaScript localeCompare() not support collation and often returns "wrong" result
 //var globalSortAlphabet=null;	// use localeCompare()
-var globalSortAlphabet=' 0123456789AÀÁÂÄÆÃÅĀBCÇĆČDĎEÈÉÊËĒĖĘĚFGĞHIÌÍÎİÏĪĮJKLŁĹĽMNŃÑŇOÒÓÔÖŐŒØÕŌPQRŔŘSŚŠȘșŞşẞTŤȚțŢţUÙÚÛÜŰŮŪVWXYÝŸZŹŻŽaàáâäæãåābcçćčdďeèéêëēėęěfgğhiìíîïīįıjklłĺľmnńñňoòóôöőœøõōpqrŕřsśšßtťuùúûüűůūvwxyýÿzźżž';	// use custom alphabet sorting (note: the first character is "space")
+var globalSortAlphabet=' 0123456789AÀÁÂÄÆÃÅĀBCÇĆČDĎEÈÉÊËĒĖĘĚFGĞHIÌÍÎİÏĪĮJKLŁĹĽMNŃÑŇOÒÓÔÖŐŒØÕŌPQRŔŘSŚŠȘșŞşẞTŤȚțŢţUÙÚÛÜŰŮŪVWXYÝŸZŹŻŽaàáâäæãåābcçćčdďeèéêëēėęěfgğhiìíîïīįıjklłĺľmnńñňoòóôöőœøõōpqrŕřsśšßtťuùúûüűůūvwxyýÿzźżžАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЬабвгґдеєжзиіїйклмнопрстуфхцчшщюяь';	// use custom alphabet sorting (note: the first character is "space")
 // search functionality character equivalence (transformation to ASCII: key = regex text, value = result character)
 var globalSearchTransformAlphabet={'[ÀàÁáÂâÄäÆæÃãÅåĀā]': 'a', '[ÇçĆćČč]': 'c', '[Ďď]': 'd', '[ÈèÉéÊêËëĒēĖėĘęĚě]': 'e', '[Ğğ]': 'g', '[ÌìÍíÎîİıÏïĪīĮį]': 'i', '[ŁłĹĺĽľ]': 'l', '[ŃńÑñŇň]': 'n', '[ÒòÓóÔôÖöŐőŒœØøÕõŌō]': 'o', '[ŔŕŘř]': 'r', '[ŚśŠšȘșŞşẞß]': 's', '[ŤťȚțŢţ]': 't', '[ÙùÚúÛûÜüŰűŮůŪū]': 'u', '[ÝýŸÿ]': 'y', '[ŹźŻżŽž]': 'z'};
 

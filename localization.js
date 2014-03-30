@@ -233,11 +233,11 @@ localization['fr_FR']=	/* thanks John Fischer and Jean-Christophe Bach */
 
 	unsupportedBrowser: 'Note : votre navigateur n\'est pas supporté !',
 
-	errUnableSync: 'Erreur : \'impossible de synchroniser la ressource\' : essayer à nouveau plus tard !',
+	errUnableSync: 'Erreur : \'impossible de synchroniser la ressource\' : réessayez plus tard !',
 	errHttpCommon: 'code d\'erreur %%',
 	errHttp401: 'non autorisé',
 	errHttp403: 'interdit',
-	errHttp405: 'methode non autorisée',
+	errHttp405: 'méthode non autorisée',
 	errHttp408: 'expiration du délai de la requête',
 	errHttp412: 'quelqu\'un d\'autre l\'a déjà modifié sur le serveur',
 	errHttp500: 'erreur interne du serveur',
@@ -246,7 +246,7 @@ localization['fr_FR']=	/* thanks John Fischer and Jean-Christophe Bach */
 	loadingResources: 'Chargement des ressources (%act% sur %total%)...',
 	updateNotification: '%name% %new_ver% est disponible (vous êtes actuellement en version %curr_ver%) - %url%',
 
-	txtCacheText: 'Il y a une mise à jour disponible sur le serveur, veuillez recharger la page s\'il vous plaît!',
+	txtCacheText: 'Il y a une mise à jour disponible sur le serveur, veuillez recharger la page s\'il vous plaît !',
 	txtCacheButton: 'Recharger'
 }
 
@@ -438,6 +438,44 @@ localization['tr_TR']=	/* thanks Selcuk Pultar */
 
 	txtCacheText: 'Sunucuda bir güncelleme mevcut, lütfen sayfayı yeniden yükleyin!',
 	txtCacheButton: 'Yeniden yükle'
+}
+
+localization['uk_UA']=	/* Serge Yakimchuck <yakim@yakim.org.ua> */
+{
+	_name_: 'Українська',
+	_default_datepicker_format_: 'dd-mm-yy',
+	_default_AMPM_format_: true,
+
+	altLogo: 'Лого',
+	altLogout: 'Вийти',
+	buttonLogin: 'Увійти',
+	pholderUsername: 'Користувач',
+	pholderPassword: 'Пароль',
+	txtResources: 'Ресурси',
+	txtSearch: 'Пошук',
+	txtNote: 'Примітки',
+
+	buttonEdit: 'Правити',
+	buttonSave: 'Зберегти',
+	buttonDelete: 'Видалити',
+
+	unsupportedBrowser: 'Увага: Ваш браузер не підтримується!',
+
+	errUnableSync: 'Помилка: \'неможливо синхронізувати ресурс\': спробуйте пізніше!',
+	errHttpCommon: 'код помилки %%',
+	errHttp401: 'не авторизовано',
+	errHttp403: 'заборонено',
+	errHttp405: 'метод не дозволений',
+	errHttp408: 'перевищено час запиту',
+	errHttp412: 'хтось ще якраз це змінює на сервері',
+	errHttp500: 'внутрішня помилка сервера',
+	errHttp501: 'не реалізовано',
+
+	loadingResources: 'завантаження ресурсів (%act% з %total%) ...',
+	updateNotification: '%name% %new_ver% доступна (у вас %curr_ver%) - %url%',
+
+	txtCacheText: 'на сервері доступне оновлення, перезавантажте, будь ласка, сторінку!',
+	txtCacheButton: 'Перезавантаження'
 }
 
 var localizationCalDAV=new Object();
@@ -1749,10 +1787,10 @@ localizationCalDAV['fr_FR']=
 	renderingE: 'Prévisualisation des calendriers ...',
 	timezoneChange: 'Changement de fuseau horaire...',
 	localTime: 'Heure locale',
-	customTimezone: 'Custom (heure locale)',
+	customTimezone: 'Personnalisé (heure locale)',
 	loadPrevMonth: 'Charger le mois précédent',
 	loadNextMonth: 'Charger le mois suivant',
-	repeatBoxButton: 'option de Récurrence',
+	repeatBoxButton: 'Option de récurrence',
 	repeatBoxContent: 'est un évènement récurrent.',
 	repeatBoxQuestion: 'Avec quels évènements voulez-vous travailler ?',
 	allEvsButton: 'Tous les évènements',
@@ -1951,10 +1989,10 @@ localizationCalDAV['fr_FR']=
 	txtErrorDates: 'Erreur : La date de début doit précéder la date de fin !',
 	txtErrorDatesTodo: 'Erreur : La date de début doit précéder la date de fin !',
 
-	txtErorInputTodo: 'Impossible d\'enregistrer : corriger les valeurs non valides !',
+	txtErorInputTodo: 'Impossible d\'enregistrer : corrigez les valeurs non valides !',
 	txtDateTimeErrorTodo: 'Il faut choisir une date et une heure !',
 
-	txtErorInput: 'Erreur : \'Impossible d\'enregistrer\' : corriger les valeurs surlignées !',
+	txtErorInput: 'Erreur : \'Impossible d\'enregistrer\' : corrigez les valeurs surlignées !',
 
 	txtAlertsH: 'Alertes',
 	buttonAlert: 'Vider les Alertes',
@@ -1964,11 +2002,11 @@ localizationCalDAV['fr_FR']=
 
 	loadingCalendars: 'Chargement des calendriers (%act% sur %total%) ...',
 
-	errUnableSaveBeginCalDAV: 'Erreur : \'impossible d\'enregistrer l\'évènement\' : %%!',
-	errUnableDeleteBeginCalDAV: 'Erreur : \'impossible d\'effacer l\'evènement\' : %%!',
+	errUnableSaveBeginCalDAV: 'Erreur : \'impossible d\'enregistrer l\'évènement\' : %% !',
+	errUnableDeleteBeginCalDAV: 'Erreur : \'impossible d\'effacer l\'évènement\' : %% !',
 	CalDAVerrHttp410: 'Évènement non présent sur le serveur',
-	errUnableSaveTodoBeginCalDAV: 'Erreur : \'impossible de sauvegarder la tâche\' : %%!',
-	errUnableDeleteTodoBeginCalDAV: 'Erreur : \'impossible de supprimer la tâche\' : %%!',
+	errUnableSaveTodoBeginCalDAV: 'Erreur : \'impossible de sauvegarder la tâche\' : %% !',
+	errUnableDeleteTodoBeginCalDAV: 'Erreur : \'impossible de supprimer la tâche\' : %% !',
 	CalDAVerrTodoHttp410: 'La tâche n\'est plus disponible sur le serveur'
 }
 
@@ -3245,6 +3283,261 @@ localizationCalDAV['tr_TR']=	/* thanks Selcuk Pultar */
 	errUnableSaveTodoBeginCalDAV: 'Hata: \'yapılacak kaydedilemedi\': %%!',
 	errUnableDeleteTodoBeginCalDAV: 'Hata: \'yapılacak silinemedi\': %%!',
 	CalDAVerrTodoHttp410: 'Yapılacak artık sunucuda mevcut değil'
+}
+
+localizationCalDAV['uk_UA']=
+{
+	_default_title_format_month_: 'MMM yyyy',
+	_default_title_format_week_: 'd[ MMM][ yyyy]{ \'–\'d MMM yyyy}',
+	_default_title_format_day_: 'd MMM yyyy, ddd',
+	_default_title_format_table_: 'MMM yyyy, ddd',
+	_default_column_format_agenda_: 'd MMM, ddd',
+	_default_time_format_list_: 'dd-MM-yyyy',
+
+	txtCalendar: 'Календар',
+	txtCalendars: 'Календарі',
+	txtTodo: 'Завдання',
+	txtTodoLists: 'Список завдань',
+	txtSubscribed: 'Підписка',
+	fullCalendarMonth: 'місяць',
+	fullCalendarMultiWeek: 'тижні',
+	fullCalendarAgendaWeek: 'тиждень',
+	fullCalendarAgendaDay: 'день',
+	fullCalendarTable: 'таблиця',
+	fullCalendarTodayButton: 'сьогодні',
+	fullCalendarAllDay: 'всі дні',
+	CalDAVsearch: 'Пошук',
+	resourceEnable: 'Включити всі календарі на цьому ресурсі',
+	resourceDisable: 'Вимкнути всі календарі на цьому ресурсі',
+	allEnable: 'Включити всі календарі',
+	allDisable: 'Вимкнути всі календарі',
+	timezone: 'Часова зона',
+	txtTimezonePicker: 'Часова зона:',
+	loadingRList: 'Завантаження списку ресурсів ...',
+	renderingE: 'Надання календарів ...',
+	timezoneChange: 'Прийняття змін часової зони ...',
+	localTime: 'Локальний час',
+	customTimezone: 'Налаштований (локальний час)',
+	loadPrevMonth: 'Завантаження попереднього місяця',
+	loadNextMonth: 'Завантаження наступного місяця',
+	repeatBoxButton: 'Опції повторення',
+	repeatBoxContent: 'ця подія повторюється.',
+	repeatBoxQuestion: 'З якою подією ви бажаєте працювати?',
+	allEvsButton: 'Всі події',
+	allFutureButton: 'Ця, та всі наступні події',
+	eventOnlyButton: 'Лише ця подія',
+	repeatBoxContentTODO: 'Завдання що повторюється.',
+	repeatBoxQuestionTODO: 'З яким завданням ви бажаєте працювати?',
+	allEvsButtonTODO: 'Всі завдання',
+	allFutureButtonTODO: 'Це, та всі наступні завдання',
+	eventOnlyButtonTODO: 'Лише це завдання',
+	txtStatus: 'Статус',
+	eventAvailability : 'Доступність',
+	eventAvailabilityBusy : 'Зайнятий',
+	eventAvailabilityFree : 'Вільний',
+	eventType: 'Приватність',
+	eventTypePublic: 'Загальнодоступне',
+	eventTypePrivate: 'Приватне',
+	eventTypeConfidential: 'Конфіденційне',
+	txtPriority: 'Приорітет',
+	txtPriorityNone: 'Немає',
+	txtPriorityLow: 'Низький',
+	txtPriorityMedium: 'Середній',
+	txtPriorityHigh: 'Високий',
+	eventURL : 'URL',
+	repeatInterval: 'кожен',
+	repeatDays: 'день',
+	repeatWeeks: 'тиждень',
+	repeatMonths: 'місяць',
+	repeatYears: 'рік',
+	repeatChangeTxt: 'було змінено на сервері!',
+	repeatChangeTxtClose: 'Закрийте форму та відкрийте подію знову',
+	repeatTodoChangeTxtClose: 'Закрийте форму та відкрийте завдання знову',
+	calendarLoader: 'перезавантаження ...',
+	resizeLoader: 'зміна розміру ...',
+
+	monthNames: ['Січень','Лютий','Березень','Квітень','Травень','Червень',
+	'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+	monthNamesShort: ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер',
+	'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'],
+	dayNames: ['Неділя', 'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\'ятниця', 'Субота'],
+	dayNamesShort: ['Нед', 'Пон', 'Вівт', 'Сер', 'Чет', 'П\'ят', 'Суб'],
+	dayNamesMin: ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'],
+
+	// TODOS
+	pholderNameTODO: 'Назва',
+	pholderNewTODO: 'Нове  завдання',
+	txtTypeTODO: 'Тип',
+	txtTypeTODONone: 'Просте',
+	txtTypeTODOStart: 'Час початку',
+	txtTypeTODODue: 'Тривалість',
+	txtTypeTODOBoth: 'З часом початку та тривалістю',
+	txtDateFromTODO: 'З',
+	txtDateToTODO: 'До',
+	txtCompletedOn: 'Завершено в',
+
+	pholderDateFromTODO: 'Початкова дата',
+	pholderTimeFromTODO: 'Початковий час',
+	pholderDateToTODO: 'Кінцева дата',
+	pholderTimeToTODO: 'Кінцевий час',
+	pholderCompletedOnDate: 'Дата',
+	pholderCompletedOnTime: 'Час',
+
+	txtStatusFiltersHeaderTODO: 'Фільтри',
+	txtStatusFiltersFooterTODO: '* завершення після чи в  %date%',
+	txtStatusNeedsActionTODO: 'Потребує дії',
+	txtStatusCompletedTODO: 'Завершено',
+	txtStatusInProcessTODO: 'В процесі',
+	txtStatusCancelledTODO: 'Скасовано',
+	txtPercentCompletedTODO: 'Завершено',
+
+	txtCalendarTODO: 'Календар',
+	txtSelectCalendarTODO: 'Оберіть календар',
+	txtAlertTODO: 'Попередження',
+	txtAlertNoneTODO: 'Нічого',
+	txtAlertMessageTODO: 'Повідомлення',
+	txtAlertOnDateTODO: 'За дати',
+	txtAlertWeeksBeforeTODO: 'За тижнів',
+	txtAlertDaysBeforeTODO: 'За днів',
+	txtAlertHoursBeforeTODO: 'За годин',
+	txtAlertMinutesBeforeTODO: 'За хвилин',
+	txtAlertSecondsBeforeTODO: 'За секунд',
+	txtAlertWeeksAfterTODO: 'Через тижнів',
+	txtAlertDaysAfterTODO: 'Через днів',
+	txtAlertHoursAfterTODO: 'Через годин',
+	txtAlertMinutesAfterTODO: 'Через хвилин',
+	txtAlertSecondsAfterTODO: 'Через секунд',
+
+	pholderAfterBeforeValTODO: 'Значення',
+	pholderAlarmDateTODO: 'Дата попередження',
+	pholderAlarmTimeTODO: 'Час попередження',
+
+	pholderNoteTODO: 'Примітка',
+	txtNoteTODO: 'Примітка',
+
+	todoPrevNav: 'Показати попередній елемент',
+	todoNextNav: 'Показати наступний елемент',
+	todoUncompletedPrevNav: 'Показати попередній незавершений елемент',
+	todoUncompletedNextNav: 'Показати наступний незавершений елемент',
+
+	buttonSaveTODO: 'Зберегти',
+	buttonEditTODO: 'Редагувати',
+	buttonResetTODO: 'Скасувати',
+	buttonCloseTODO: 'Закрити',
+	buttonDeleteTODO: 'Видалити',
+
+	// EVENTS
+	pholderName: 'Назва',
+	pholderNewEvent: 'Нова подія',
+	txtLocation: 'Місцерозташування',
+	pholderLocation: 'Місцерозташування',
+
+	txtAllDay: 'Весь день',
+	from: 'З',
+	to: 'До',
+
+	pholderDateFrom: 'З дати',
+	pholderTimeFrom: 'З часу',
+	pholderDateTo: 'До дати',
+	pholderTimeTo: 'До часу',
+
+	txtStatusNone: 'Не визначено',
+	txtStatusTentative: 'Не певно',
+	txtStatusConfirmed: 'Підтверджено',
+	txtStatusCancelled: 'Скасовано',
+
+	txtRepeat: 'Повторити',
+	txtNoRepeat: 'Не повторювати',
+	txtRepeatDay: 'Щоденно',
+	txtRepeatWeek: 'Щотижня',
+	txtRepeatWeekend: 'Кожні вихідні',
+	txtRepeatMonth: 'Щомісяця',
+	txtRepeatTwoWeek: 'кожних два тижні',
+	txtRepeatYear: 'Щорічно',
+	txtRepeatCustomWeek: 'Тижнева періодичність',
+	txtRepeatCustomMonth: 'Місячна періодичність',
+	txtRepeatCustomYear: 'Річна періодичність',
+	txtRepeatWork: 'Кожен робочий день',
+	txtRepeatOnDate: 'За дати',
+	txtRepeatAfter: 'Повторів',
+	txtRepeatNever: 'Ніколи',
+	pholderUntilDate: 'До дати',
+	pholderRepeatCount: 'Кількість повторень',
+	txtRepeatCustomWeekLabel: 'в',
+	txtRepeatCustomMonthLabel: 'в дні',
+	txtRepeatCustomMonthEvery: 'кожен',
+	txtRepeatCustomMonthFirst: 'Перший',
+	txtRepeatCustomMonthSecond: 'Другий',
+	txtRepeatCustomMonthThird: 'Третій',
+	txtRepeatCustomMonthFourth: 'Четвертий',
+	txtRepeatCustomMonthFifth: 'П\'ятий',
+	txtRepeatCustomMonthLast: 'Останній',
+	txtRepeatCustomMonthCustom: 'Обрати',
+	txtRepeatCustomMonthMonth: 'День місяця',
+	txtRepeatCustomYearLabel1: 'кожен',
+	txtRepeatCustomYearLabel2: 'з',
+
+	txtRepeatEnd: 'Кінець',
+	txtEventCalendar: 'Календар',
+	txtSelectCalendar: 'Оберіть календар',
+	txtAlert: 'Попередження',
+	txtAlertNone: 'Немає',
+	txtAlertMessage: 'Повідомлення',
+	txtAlertOnDate: 'За дати',
+	txtAlertWeeksBefore: 'За тижнів',
+	txtAlertDaysBefore: 'За днів',
+	txtAlertHoursBefore: 'За годин',
+	txtAlertMinutesBefore: 'За хвилин',
+	txtAlertSecondsBefore: 'За секунд',
+	txtAlertWeeksAfter: 'Через тижнів',
+	txtAlertDaysAfter: 'Через днів',
+	txtAlertHoursAfter: 'Через днів',
+	txtAlertMinutesAfter: 'Через хвилин',
+	txtAlertSecondsAfter: 'Через секунд',
+
+	pholderAfterBeforeVal: 'Значення',
+	pholderAlarmDate: 'Дата попередження',
+	pholderAlarmTime: 'Час попередження',
+
+	pholderNote: 'Примітка',
+
+	eventPrevNav: 'Показати попередній елемент',
+	eventNextNav: 'Показати наступний елемент',
+
+	buttonReset: 'Скасувати',
+	buttonClose: 'Закрити',
+
+	txtAllSavedTodo: 'Успіх: Завдання збережено!',
+	txtAllSaved: 'Успіх: Подію збережено',
+
+	txtAllDeletedTodo: 'Успіх: Завдання видалено!',
+	txtAllDeleted: 'Успіх: Подію видалено!',
+
+	txtNotChooseTodo: 'Помилка: Треба обрати календар!',
+	txtNotChoose: 'Помилка: Треба обрати календар!',
+
+	txtErrorDates: 'Помилка: Дата початки має передувати даті закінчення!',
+	txtErrorDatesTodo: 'Помилка: Дата початки має передувати даті закінчення!',
+
+	txtErorInputTodo: 'Неможливо зберегти: виправіть помилкові значення!',
+	txtDateTimeErrorTodo: 'Треба обрати дату та час!',
+
+	txtErorInput: 'Помилка: \'неможливо зберегти\': виправіть підсвічені помилкові значення!',
+
+	txtAlertsH: 'Попередження',
+	buttonAlert: 'Очистити попередження',
+
+	altAddEvent: 'Додати подію',
+	altAddTodo: 'Додати завдання',
+
+	loadingCalendars: 'Завантаження календарів (%act% з %total%) ...',
+
+	errUnableSaveBeginCalDAV: 'Помилка: \'неможливо зберегти подію\': %%!',
+	errUnableDeleteBeginCalDAV: 'Помилка: \'неможливо видалити подію\': %%!',
+	CalDAVerrHttp410: 'Подія більше недоступна на сервері',
+	errUnableSaveTodoBeginCalDAV: 'Помилка: \'неможливо видалити завдання\': %%!',
+	errUnableDeleteTodoBeginCalDAV: 'Помилка: \'неможливо зберегти завдання\': %%!',
+	CalDAVerrTodoHttp410: 'Завдання більше недоступне на сервері'
 }
 
 $.extend(true, localization, localizationCalDAV);
