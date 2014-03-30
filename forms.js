@@ -299,14 +299,14 @@ function showTodoForm(todo, mod, repeatOne, confirmRepeat)
 					showTodoPrevNav();
 				
 				var uncomplete=0;
-				for(var ij=eventsSorted.indexOf(todo); ij<eventsSorted.length; ij++)
+				for(var ij=(eventsSorted.indexOf(todo)+1); ij<eventsSorted.length; ij++)
 					if(eventsSorted[ij].status!='COMPLETED')
 						uncomplete++;
 				if(uncomplete>0 && eventsSorted.indexOf(todo)<(eventsSorted.length-1))
 					showTodoNextNav(true);
 				
 				var uncomplete=0;
-				for(var ij=eventsSorted.indexOf(todo); ij>=0; ij--)
+				for(var ij=(eventsSorted.indexOf(todo)-1); ij>=0; ij--)
 					if(eventsSorted[ij].status!='COMPLETED')
 						uncomplete++;
 				if(uncomplete>0 && eventsSorted.indexOf(todo)!=0)
@@ -1690,12 +1690,10 @@ function showEventForm(date, allDay, calEvent, jsEvent, mod, repeatOne, confirmR
 		fullVcalendarToData(calEvent);
 	else
 		CalDAVeditor_cleanup();
-	
-	if(repeatOne=='editOnly')
-		if(calEvent!=null && (calEvent.type || calEvent.rec_id))
+
+		if(calEvent!=null && ((repeatOne=='editOnly'&&calEvent.type) || calEvent.rec_id))
 		{
 			var eventsSorted=jQuery.grep(globalEventList.displayEventsArray[calEvent.res_id],function(e){if(e.id==calEvent.id)return true}).sort(repeatStartCompare);
-
 			if(eventsSorted.indexOf(calEvent)!=-1)
 			{
 				if(eventsSorted.indexOf(calEvent)<(eventsSorted.length-1))

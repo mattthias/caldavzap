@@ -210,6 +210,7 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 	var tzArray=new Array();
 	var tzString='';
 	var isTimeZone=false;
+	var origTimezone = '';
 	for(var iE=0;iE<inputTodos.length;iE++)
 	{
 		if(tzArray.indexOf(inputTodos[iE].timeZone)==-1)
@@ -225,6 +226,8 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 					tzString+='\r\n';
 				isTimeZone=true;
 			}
+			else if(component!='' && ($('#vcalendarHashTODO').val()==hex_sha256(inputTodos[iE].vcalendar)))
+				origTimezone+=component;
 		}
 	}
 	if(isTimeZone)
@@ -267,6 +270,8 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 			todoStringArray[todoStringArray.length]=partTodo;
 		}
 	}
+	var beginVcalendar = vCalendarText;
+	var futureMode = false;
 	for(var j=0;j<inputTodos.length;j++)
 	{
 		todoStringArray.splice(todoStringArray.indexOf(inputTodos[j].vcalendar),1);
@@ -374,6 +379,7 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 				vCalendarText+=inputTodos[j].vcalendar;
 			else
 				vCalendarText+='\r\n'+inputTodos[j].vcalendar;
+			futureMode=true;
 		}
 		else if(deleteMode && $('#futureStartTODO').val().split(';')[0]!='' && ($('#futureStartTODO').val().split(';')[1]==inputTodos[j].start || $('#futureStartTODO').val().split(';')[1]==inputTodos[j].end))
 		{
@@ -405,10 +411,17 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 			else
 				vCalendarText+='\r\n'+todoStringArray[ip];
 		}
-	if(deleteMode)
+	var origEvent='';
+	if(deleteMode || futureMode)
 	{
 		if(vCalendarText.lastIndexOf('\r\n')!=(vCalendarText.length-2))
 			vCalendarText+='\r\n';
+		if(!isTimeZone && futureMode && origTimezone!='')
+		{
+			vCalendarText+=origTimezone;
+			if(vCalendarText.lastIndexOf('\r\n')!=(vCalendarText.length-2))
+				vCalendarText+='\r\n';
+		}
 		// PRODID
 		if(vCalendar.tplM['VTcontentline_PRODID']!=null && (process_elem=vCalendar.tplM['VTcontentline_PRODID'][0])!=undefined)
 		{
@@ -440,7 +453,18 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 			process_elem=process_elem.replace('##:::##group_wd##:::##', '');
 			vCalendarText+=process_elem;
 		}
-		return putVcalendarToCollection(accountUID, inputUID, inputEtag, vCalendarText, delUID,'vtodo','',deleteMode,[]);
+		if(deleteMode)
+		{
+			var fixedArr = checkAndFixMultipleUID(vCalendarText,false);
+			var inputS = fixedArr[0];
+			fixedArr.splice(0,1);
+			return putVcalendarToCollection(accountUID, inputUID, inputEtag, inputS, delUID,'vtodo','',deleteMode,fixedArr);
+		}
+		else if(futureMode)
+		{
+			origEvent = vCalendarText;
+			vCalendarText = beginVcalendar;
+		}
 	}
 	
 	var timeZoneAttr='';
@@ -557,7 +581,7 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 	vCalendarText+=process_elem;
 
 	// UID (required by RFC)
-	if(!appleTodoMode && vCalendar.tplM['VTcontentline_UID']!=null && (process_elem=vCalendar.tplM['VTcontentline_UID'][0])!=undefined)
+	if(!appleTodoMode && $("#futureStartTODO").val()=='' && vCalendar.tplM['VTcontentline_UID']!=null && (process_elem=vCalendar.tplM['VTcontentline_UID'][0])!=undefined)
 	{
 		// replace the object and related objects' group names (+ append the related objects after the processed)
 		parsed=('\r\n'+process_elem).match(RegExp('\r\n((?:'+vCalendar.re['group']+'\\.)?)', 'm'));
@@ -1673,10 +1697,26 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 		if(origFirst.lastIndexOf('\r\n')!=(origFirst.length-2))
 			origFirst += '\r\n';
 		origFirst += vCalendarText;
-		textArray = [newFirst];
-		vCalendarText = origFirst;
+		var fixed = checkAndFixMultipleUID(newFirst,false);
+		if(fixed.length==1)
+			textArray[textArray.length]=origFirst;
+		else
+			textArray=fixed;
+		vCalendarText = newFirst;
 	}
-	return putVcalendarToCollection(accountUID, inputUID, inputEtag, vCalendarText, delUID,'vtodo','',deleteMode,textArray);
+	else if(futureMode && origEvent!='')
+	{
+		var fixed = checkAndFixMultipleUID(origEvent,false);
+		if(fixed.length==1)
+			textArray[textArray.length]=origEvent;
+		else
+			textArray=fixed;
+	}
+	var fixedArr = checkAndFixMultipleUID(vCalendarText,false);
+	fixedArr = $.merge(textArray,fixedArr);
+	var inputS = fixedArr[0];
+	fixedArr.splice(0,1);
+	return putVcalendarToCollection(accountUID, inputUID, inputEtag, inputS, delUID,'vtodo','',deleteMode,fixedArr);
 }
 
 function fullVcalendarToTodoData(inputEvent)
@@ -2832,7 +2872,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 			var d=$.fullCalendar.parseDate(help);
 			var da=new Date(d.getTime());
 			if(help1.indexOf("T")==-1)
-				da = new Date(d.getTime()-1*24*60*60*1000);
+				da.setDate(da.getDate()-1);
 			help=$.fullCalendar.formatDate(da, "yyyy-MM-dd");
 			all=true;
 			oldEnd = help;
