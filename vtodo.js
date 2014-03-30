@@ -3280,7 +3280,6 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 					untilDate.setHours(realStart.getHours());
 					untilDate.setMinutes(realStart.getMinutes());
 					untilDate.setSeconds(realStart.getSeconds());
-					console.log(untilDate);
 				}
 				
 				realUntil='';
@@ -3480,7 +3479,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 					var count=untilDate-varDate;
 				else
 					var count = until - realRepeatCount;
-				if(count<=0)
+				if(count<0)
 					break;
 				else
 				{

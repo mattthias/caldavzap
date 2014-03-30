@@ -503,7 +503,6 @@ $(document).on('blur', '.time', function(){
 		var validD=true, prevDate = '';
 		if(globalPrevDate!='')
 			prevDate = new Date(globalPrevDate.getTime());
-		console.log(globalPrevDate);
 		try {$.datepicker.parseDate(globalSessionDatepickerFormat, $('#date_fromTODO').val())}
 		catch (e){validD=false}
 		if(tmptime.match(globalTimePre)!=null && validD)
@@ -4769,12 +4768,6 @@ function initTodoList()
 			element.attr("title",title);
 			if(event.searchData)
 				element.append($('<td>').attr({'data-type':'searchable_data', 'style':'display:none;'}).html(event.searchData.replace(/(\r\n|\n|\r)+/gm," ")));
-		},
-		prevClick: function() {
-			console.log('prev todo');
-		},
-		nextClick: function() {
-			console.log('next todo');
 		}
 	});
 	$('#todoList').fullCalendar('allowSelectEvent',false);

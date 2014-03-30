@@ -4135,7 +4135,6 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								untilDate.setHours(realStart.getHours());
 								untilDate.setMinutes(realStart.getMinutes());
 								untilDate.setSeconds(realStart.getSeconds());
-								console.log(untilDate);
 							}
 							
 							realUntil='';
@@ -4284,7 +4283,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								var count=untilDate-varDate;
 							else
 								var count = until - realRepeatCount;
-							if(count<=0)
+							if(count<0)
 								break;
 							else
 							{
@@ -4648,7 +4647,6 @@ function notRFCDataToRFCData(vcalendarString)
 	
 	// remove line folding
 	vcalendarString=vcalendarString.replace(RegExp('\r\n'+vCalendar.re['WSP'], 'gm'), '');
-	vcalendarString=vcalendarString.replaceAll('"','');
 	
 	// append '\r\n' to the end of the vCalendar if missing
 	if(vcalendarString[vcalendarString.length-1]!='\n')

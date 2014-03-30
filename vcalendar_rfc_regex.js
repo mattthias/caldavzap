@@ -148,7 +148,7 @@ vCalendar.pre['contentline_SUMMARY']=RegExp('\r\n'+vCalendar.re['contentline_SUM
 
 //vCalendar.re['contentline_DTSTART']='(?:'+vCalendar.re['group']+'\\.)?DTSTART:'+vCalendar.re['float-value']+';'+vCalendar.re['float-value']+vCalendar.re['CRLF'];
 
-vCalendar.re['tzidparam']='TZID=/?'+vCalendar.re['ptext'];
+vCalendar.re['tzidparam']='TZID=/?'+vCalendar.re['param-value']; // more correct is vCalendar.re['ptext'] - from RFC 2445 -> TZID 4.2.19
 vCalendar.re['dtstparam']='(?:VALUE=(?:date|date-time)|'+vCalendar.re['tzidparam']+'|'+vCalendar.re['xparam']+')';
 vCalendar.re['contentline_DTSTART']='(?:'+vCalendar.re['group']+'\\.)?DTSTART(?:;'+vCalendar.re['dtstparam']+')*:'+vCalendar.re['dtstval']+vCalendar.re['CRLF'];
 vCalendar.pre['contentline_DTSTART']=RegExp('\r\n'+vCalendar.re['contentline_DTSTART'],'mi');
