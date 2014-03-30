@@ -1695,10 +1695,18 @@ function showAlertEvents(inputUID, realDelay, alarmObject)
 		$('#AlertDisabler').fadeIn(globalEditorFadeAnimation)
 
 		var date=$.fullCalendar.parseDate(alarmObject.start);
-		var dateString=' : '+$.datepicker.formatDate(globalSettings.datepickerformat,date);
+		var dateString='';
+		var formattedDate = $.datepicker.formatDate(globalSettings.datepickerformat,date);
+		if(formattedDate!='')
+			dateString+=' : '+formattedDate;
+
 		var timeString='';
 		if(!alarmObject.allDay)
-			timeString=' - '+$.fullCalendar.formatDate(date, globalSettings.ampmformat?'h:mm TT{ - h:mm TT}':'H:mm{ - H:mm}');
+		{
+			var timeS = $.fullCalendar.formatDate(date, globalSettings.ampmformat?'h:mm TT{ - h:mm TT}':'H:mm{ - H:mm}')
+			if(timeS!='')
+				timeString=' - '+timeS;
+		}
 
 		$('#alertBoxContent').append("<div class='alert_item'><img src='images/calendarB.svg' alt='Calendar'/><label>"+alarmObject.title+dateString+timeString+"</label></div>");
 	}
@@ -1733,10 +1741,16 @@ function showAlertTODO(inputUID, realDelay, alarmObject)
 		$('#alertBox').css('visibility', 'visible');
 		$('#AlertDisabler').fadeIn(globalEditorFadeAnimation);
 
+		var dateString='';
 		var date=$.fullCalendar.parseDate(alarmObject.start);
-		var dateString=' : '+$.datepicker.formatDate(globalSettings.datepickerformat,date);
-		var timeString=' - '+$.fullCalendar.formatDate(date,globalSettings.ampmformat?'h:mm TT{ - h:mm TT}':'H:mm{ - H:mm}');
+		var formattedDate=$.datepicker.formatDate(globalSettings.datepickerformat,date);
+		if(formattedDate!='')
+			dateString=' : '+formattedDate;
 
+		var timeString=''
+		var timeS = $.fullCalendar.formatDate(date,globalSettings.ampmformat?'h:mm TT{ - h:mm TT}':'H:mm{ - H:mm}');
+		if(timeS!='')
+			timeString=' - '+timeS;
 		$('#alertBoxContent').append("<div class='alert_item'><img src='images/todoB.svg' alt='Todo'/><label>"+alarmObject.title+dateString+timeString+"</label></div>");
 	}
 }
@@ -2539,8 +2553,8 @@ function initFullCalendar()
 		},
 		timeFormat: {
 			agenda: globalSettings.timeformatagenda,
-			list: globalSettings.ampmformat ? 'h:mm TT{ - h:mm TT}' : 'H:mm{ - H:mm}',
-			listFull: globalSettings.ampmformat ? globalSettings.timeformatlist + ' h:mm TT{ - ' + globalSettings.timeformatlist +' h:mm TT}' : globalSettings.timeformatlist + ' H:mm{ - ' + globalSettings.timeformatlist + ' H:mm}',
+			list: globalSettings.ampmformat ? 'hh:mm TT{ - hh:mm TT}' : 'HH:mm{ - HH:mm}',
+			listFull: globalSettings.ampmformat ? globalSettings.timeformatlist + ' hh:mm TT{ - ' + globalSettings.timeformatlist +' hh:mm TT}' : globalSettings.timeformatlist + ' HH:mm{ - ' + globalSettings.timeformatlist + ' HH:mm}',
 			listFullAllDay: globalSettings.timeformatlist + '{ - ' + globalSettings.timeformatlist + '}',
 			'': globalSettings.timeformatbasic
 		},
@@ -2793,7 +2807,7 @@ function initTodoList()
 			todo: globalSettings.columnformatagenda,
 		},
 		timeFormat: {
-			list: globalSettings.ampmformat ? globalSettings.timeformatlist + ' h:mm TT' : globalSettings.timeformatlist + ' H:mm',
+			list: globalSettings.ampmformat ? globalSettings.timeformatlist + ' hh:mm TT' : globalSettings.timeformatlist + ' HH:mm',
 		},
 		axisFormat: globalSettings.ampmformat ? 'h:mm TT' : 'H:mm',
 		buttonText: {

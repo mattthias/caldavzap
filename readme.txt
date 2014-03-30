@@ -119,8 +119,8 @@ What you need to know before you start to configure the client:
 	b.) copy the source code into your web server directory (if you use Apache it is strongly recommended to enable the following modules: mod_expires, mod_mime and mod_deflate ... see .htaccess for more details)
 	c.) set your CardDAV/CalDAV server related configuration in config.js (see 6.))
 	d.) set other configuration options in config.js (see comments in config.js)
-	e.) open the installation directory in your browser
-	f.) update your HTML5 cache (see 7.))
+	e.) update your HTML5 cache (see 7.))
+	f.) open the installation directory in your browser
 	g.) login and use the client :-)
 
 9.) DAViCal (non cross-domain) installation instructions

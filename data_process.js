@@ -1998,20 +1998,21 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 				break;
 			}
 		var alarmIterator=0;
-
+		var alarmUniqueArray = new Array();
 		for(var t=0;t<lastDataId;t++)
 		{
 			if($(".alert[data-id="+(t+1)+"]").length>0)
 			{
+				var alarmText = '';
 				if($(".alert[data-id="+(t+1)+"]").val()!='none')
 				{
 					if(vCalendar.tplM['beginVALARM']!=null && (process_elem=vCalendar.tplM['beginVALARM'][0])!=undefined)
-						vCalendarText+=vCalendar.tplM['beginVALARM'][0];
+						alarmText+=vCalendar.tplM['beginVALARM'][0];
 					else
 					{
 						process_elem=vCalendar.tplC['beginVALARM'];
 						process_elem=process_elem.replace('##:::##group_wd##:::##', '');
-						vCalendarText+=process_elem;
+						alarmText+=process_elem;
 						vevent=true;
 					}
 
@@ -2057,7 +2058,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 							process_elem=process_elem.replace('##:::##VALUE=DATE-TIME##:::##', ';VALUE=DATE-TIME');
 							process_elem=process_elem.replace('##:::##VALUE=DURATION##:::##', '');
 							process_elem=process_elem.replace('##:::##value##:::##', vcalendarEscapeValue(newValue));
-							vCalendarText+=process_elem;
+							alarmText+=process_elem;
 						}
 						else
 						{
@@ -2098,7 +2099,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 							process_elem=process_elem.replace('##:::##VALUE=DATE-TIME##:::##', '');
 							process_elem=process_elem.replace('##:::##VALUE=DURATION##:::##', ';VALUE=DURATION');
 							process_elem=process_elem.replace('##:::##value##:::##', duration);
-							vCalendarText+=process_elem;
+							alarmText+=process_elem;
 						}
 
 						if(vCalendar.tplM['contentline_ACTION']!=null && (process_elem=vCalendar.tplM['contentline_ACTION'][0])!=undefined)
@@ -2114,7 +2115,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 							process_elem=process_elem.replace('##:::##params_wsc##:::##', '');
 						}
 						process_elem=process_elem.replace('##:::##value##:::##', vcalendarEscapeValue('DISPLAY'));
-						vCalendarText+=process_elem;
+						alarmText+=process_elem;
 						var a=new Date();
 						/*
 						if(vCalendar.tplM['contentline_DESCRIPTION']!=null && (process_elem=vCalendar.tplM['contentline_DESCRIPTION'][0])!=undefined)
@@ -2138,15 +2139,20 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 						tmp=vCalendar.tplM['unprocessedVALARM'][t].replace(RegExp('^\r\n'), '');
 						if(tmp.indexOf('\r\n')==0)
 							tmp=tmp.substring(2, tmp.length);
-						vCalendarText+=tmp;
+						alarmText+=tmp;
 					}
 					if(vCalendar.tplM['endVALARM']!=null && (process_elem=vCalendar.tplM['endVALARM'][0])!=undefined)
-						vCalendarText+=vCalendar.tplM['endVALARM'][0];
+						alarmText+=vCalendar.tplM['endVALARM'][0];
 					else
 					{
 						process_elem=vCalendar.tplC['endVALARM'];
 						process_elem=process_elem.replace('##:::##group_wd##:::##', '');
-						vCalendarText+=process_elem;
+						alarmText+=process_elem;
+					}
+					if(alarmUniqueArray.indexOf(alarmText)==-1)
+					{
+						alarmUniqueArray.push(alarmText);
+						vCalendarText+=alarmText;
 					}
 				}
 			}
@@ -4203,13 +4209,15 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 									return false;
 								if(ut.toString()=='Invalid Date')
 									return false;
-								
-								if(globalSettings.timezonesupport && tzName in timezones)
-									valOffsetFrom=getOffsetByTZ(tzName, ut);
-								if(valOffsetFrom)
+								if(!all)
 								{
-									var intOffset=valOffsetFrom.getSecondsFromOffset()*1000;
-									ut.setTime(ut.getTime()+intOffset);
+									if(globalSettings.timezonesupport && tzName in timezones)
+										valOffsetFrom=getOffsetByTZ(tzName, ut);
+									if(valOffsetFrom)
+									{
+										var intOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+										ut.setTime(ut.getTime()+intOffset);
+									}
 								}
 								untilDate = new Date(ut.getTime());
 							}
