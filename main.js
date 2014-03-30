@@ -112,7 +112,7 @@ var globalActiveApp='';
 var globalAvailableAppsArray=new Array();
 var globalEnableAppSwitch=true;
 var globalAppName='CalDavZAP';
-var globalVersion='0.10.0';
+var globalVersion='0.10.0.1';
 var globalVersionCheckURL=(location.protocol=='file:' ? 'http:' : location.protocol)+'//www.inf-it.com/versioncheck/'+globalAppName+'/?v='+globalVersion;
 var globalXClientHeader=globalAppName+' '+globalVersion+' (Inf-IT CalDAV Web Client)';
 var globalResourceNumberCount=0;
@@ -1283,7 +1283,7 @@ function localizeCalDAV()
 	globalSettings.titleformatday = localization[globalInterfaceLanguage]._default_title_format_day_;
 	globalSettings.titleformattable = localization[globalInterfaceLanguage]._default_title_format_table_;
 	globalSettings.columnformatagenda = localization[globalInterfaceLanguage]._default_column_format_agenda_;
-	globalSettings.timeformatlist = localization[globalInterfaceLanguage]._default_column_format_agenda_;
+	globalSettings.timeformatlist = localization[globalInterfaceLanguage]._default_time_format_list_;
 }
 
 function runCalDAV()

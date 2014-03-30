@@ -1,5 +1,15 @@
 CalDavZAP Changelog
 
+version 0.10.0.1 [2014-02-04]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
+- added Spanish localization (es_ES) - thanks Damián Vila
+- updated jQuery to 2.1.0
+- updated jQuery-UI to 1.10.4
+- changed various default date formats
+- changed alarm behaviour - it is no longer possible to create multiple identical alarms (they are automatically merged into one)
+- fixed a visual bug when displaying a simple todo alert
+- fixed rare issue where UNTIL attribute of recurrent events was not processed correctly
+
 version 0.10.0 [2014-01-22]:
 - note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
 - note: this release contains new, changed and also removed configuration options (always use the latest config.js)

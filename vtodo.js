@@ -1171,19 +1171,21 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 		}
 
 	var alarmIterator=0;
+	var alarmUniqueArray = new Array();
 	for(var t=0;t<lastDataId;t++)
 	{
 		if($(".alertTODO[data-id="+(t+1)+"]").length>0)
 		{
+			var alarmText = '';
 			if($(".alertTODO[data-id="+(t+1)+"]").val()!='none')
 			{
 				if(vCalendar.tplM['VTbeginVALARM']!=null && (process_elem=vCalendar.tplM['VTbeginVALARM'][0])!=undefined)
-					vCalendarText+=vCalendar.tplM['VTbeginVALARM'][0];
+					alarmText+=vCalendar.tplM['VTbeginVALARM'][0];
 				else
 				{
 					process_elem=vCalendar.tplC['VTbeginVALARM'];
 					process_elem=process_elem.replace('##:::##group_wd##:::##', '');
-					vCalendarText+=process_elem;
+					alarmText+=process_elem;
 					vevent=true;
 				}
 
@@ -1235,7 +1237,7 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 						process_elem=process_elem.replace('##:::##VALUE=DATE-TIME##:::##', ';VALUE=DATE-TIME');
 						process_elem=process_elem.replace('##:::##VALUE=DURATION##:::##', '');
 						process_elem=process_elem.replace('##:::##value##:::##', vcalendarEscapeValue(newValue));
-						vCalendarText+=process_elem;
+						alarmText+=process_elem;
 					}
 					else
 					{
@@ -1278,7 +1280,7 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 						process_elem=process_elem.replace('##:::##VALUE=DATE-TIME##:::##', '');
 						process_elem=process_elem.replace('##:::##VALUE=DURATION##:::##', ';VALUE=DURATION');
 						process_elem=process_elem.replace('##:::##value##:::##', duration);
-						vCalendarText+=process_elem;
+						alarmText+=process_elem;
 					}
 
 					if(vCalendar.tplM['VTcontentline_ACTION']!=null && (process_elem=vCalendar.tplM['VTcontentline_ACTION'][0])!=undefined)
@@ -1294,7 +1296,7 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 						process_elem=process_elem.replace('##:::##params_wsc##:::##', '');
 					}
 					process_elem=process_elem.replace('##:::##value##:::##', vcalendarEscapeValue('DISPLAY'));
-					vCalendarText+=process_elem;
+					alarmText+=process_elem;
 					/*
 					if(vCalendar.tplM['VTcontentline_DESCRIPTION']!=null && (process_elem=vCalendar.tplM['VTcontentline_DESCRIPTION'][0])!=undefined)
 					{
@@ -1320,17 +1322,22 @@ function todoToVcalendar(accountUID, inputUID, inputEtag, delUID, deleteMode)
 						tmp=vCalendar.tplM['VTunprocessedVALARM'][t].replace(RegExp('^\r\n'), '');
 						if(tmp.indexOf('\r\n')==0)
 							tmp=tmp.substring(2, tmp.length);
-						vCalendarText+=tmp;
+						alarmText+=tmp;
 					}
 				}
 
 				if(vCalendar.tplM['VTendVALARM']!=null && (process_elem=vCalendar.tplM['VTendVALARM'][0])!=undefined)
-					vCalendarText+=vCalendar.tplM['VTendVALARM'][0];
+					alarmText+=vCalendar.tplM['VTendVALARM'][0];
 				else
 				{
 					process_elem=vCalendar.tplC['VTendVALARM'];
 					process_elem=process_elem.replace('##:::##group_wd##:::##', '');
-					vCalendarText+=process_elem;
+					alarmText+=process_elem;
+				}
+				if(alarmUniqueArray.indexOf(alarmText)==-1)
+				{
+					alarmUniqueArray.push(alarmText);
+					vCalendarText+=alarmText;
 				}
 			}
 		}
