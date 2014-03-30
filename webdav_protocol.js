@@ -483,15 +483,17 @@ function DAVresourceDelegation(inputResource, index, lastIndex)
 		url: inputResource.href,
 		cache: false,
 		crossDomain: (typeof inputResource.crossDomain=='undefined' ? true: inputResource.crossDomain),
-		xhrFields: {
+		xhrFields:
+		{
 			withCredentials: (typeof inputResource.withCredentials=='undefined' ? false: inputResource.withCredentials)
 		},
 		timeout: inputResource.timeOut,
 		error: function(objAJAXRequest, strError)
 		{
-			console.log("Error: [netLoadResource: '"+uidBase+"'] code: '"+objAJAXRequest.status+"'"+(objAJAXRequest.status==0 ? ' (this error code usually means network connection error, or your browser is trying to make a cross domain query, but it is not allowed by the destination server or the browser itself)': ''));
+			console.log("Error: [DAVresourceDelegation: '"+uidBase+"'] code: '"+objAJAXRequest.status+"'"+(objAJAXRequest.status==0 ? ' (this error code usually means network connection error, or your browser is trying to make a cross domain query, but it is not allowed by the destination server or the browser itself)': ''));
 		},
-		beforeSend: function(req){
+		beforeSend: function(req)
+		{
 			if(globalSettings.usejqueryauth!=true && inputResource.userAuth.userName!='' && inputResource.userAuth.userPassword!='')
 				req.setRequestHeader('Authorization', basicAuth(inputResource.userAuth.userName, inputResource.userAuth.userPassword));
 
@@ -502,87 +504,79 @@ function DAVresourceDelegation(inputResource, index, lastIndex)
 		password: (globalSettings.usejqueryauth==true ? inputResource.userAuth.userPassword : null),
 		contentType: 'text/xml',
 		processData: true,
-		data: '<A:expand-property xmlns:A="DAV:"><A:property name="calendar-proxy-read-for" namespace="http://calendarserver.org/ns/"><A:property name="email-address-set" namespace="http://calendarserver.org/ns/"/>'+
-				'<A:property name="displayname" namespace="DAV:"/><A:property name="calendar-user-address-set" namespace="urn:ietf:params:xml:ns:caldav"/>'+
-				'</A:property><A:property name="calendar-proxy-write-for" namespace="http://calendarserver.org/ns/"><A:property name="email-address-set" namespace="http://calendarserver.org/ns/"/>'+
-				'<A:property name="displayname" namespace="DAV:"/><A:property name="calendar-user-address-set" namespace="urn:ietf:params:xml:ns:caldav"/>'+
-				'</A:property>'+
-				'</A:expand-property>',
+		data: '<?xml version="1.0" encoding="utf-8"?><A:expand-property xmlns:A="DAV:"><A:property name="calendar-proxy-read-for" namespace="http://calendarserver.org/ns/"><A:property name="email-address-set" namespace="http://calendarserver.org/ns/"/><A:property name="displayname" namespace="DAV:"/><A:property name="calendar-user-address-set" namespace="urn:ietf:params:xml:ns:caldav"/></A:property><A:property name="calendar-proxy-write-for" namespace="http://calendarserver.org/ns/"><A:property name="email-address-set" namespace="http://calendarserver.org/ns/"/><A:property name="displayname" namespace="DAV:"/><A:property name="calendar-user-address-set" namespace="urn:ietf:params:xml:ns:caldav"/></A:property></A:expand-property>',
 		dataType: 'xml',
-		complete: function(xml, textStatus){
+		complete: function(xml, textStatus)
+		{
 			if(textStatus!='success')
 				return false;
 
-			var hrefArray = new Array();
 			if(typeof globalAccountSettings=='undefined')
 				globalAccountSettings=[];
-			var hostPart = tmp[0];		
-			var propElement = $(xml.responseXML).children().filterNsNode('multistatus').children().filterNsNode('response').children().filterNsNode('propstat').
-			children().filterNsNode('prop');
 
-			var searchR = new Array();
-			searchR[searchR.length] = $(propElement).children().filterNsNode('calendar-proxy-read-for');
-			searchR[searchR.length] = $(propElement).children().filterNsNode('calendar-proxy-write-for');
-			for(var m=0;m<searchR.length; m++)
+			var hostPart=tmp[0];
+			var propElement=$(xml.responseXML).children().filterNsNode('multistatus').children().filterNsNode('response').children().filterNsNode('propstat').children().filterNsNode('prop');
+
+			var searchR=new Array();
+			searchR[searchR.length]=$(propElement).children().filterNsNode('calendar-proxy-read-for');
+			searchR[searchR.length]=$(propElement).children().filterNsNode('calendar-proxy-write-for');
+			for(var m=0; m<searchR.length; m++)
 			{
-				searchR[m].children().filterNsNode('response').children().filterNsNode('propstat').
-				children().filterNsNode('prop').children().filterNsNode('calendar-user-address-set').each(
-				function(index, element)
-				{
-					var href = $(element).children().filterNsNode('href');
-					if(href.length > 1)
-						hrefArray[hrefArray.length] = $(href[1]).text();
-					var found = false;
-					for(var i=0;i<globalAccountSettings.length;i++)
-						if(decodeURIComponent(globalAccountSettings[i].href) == (hostPart+$(href[1]).text()))
-							found = true;
-					if(!found)
+				searchR[m].children().filterNsNode('response').children().filterNsNode('href').each(
+					function(index, element)
 					{
-						var enabled = false;
-						if(inputResource.delegation instanceof Array && inputResource.delegation.length>0)
+						var href=$(element).text();
+
+						var found=false;
+						for(var i=0; i<globalAccountSettings.length; i++)
+							if(decodeURIComponent(globalAccountSettings[i].href)==(hostPart+href))
+								found=true;
+						if(!found)
 						{
-							for(var j=0; j<inputResource.delegation.length; j++)
-								if(typeof inputResource.delegation[j]=='string')
-								{
-									var index = ($(href[1]).text()).indexOf(inputResource.delegation[j]);
-									if(index!=-1)
-										if(($(href[1]).text()).length == (index+inputResource.delegation[j].length))
-											enabled=true;	
-								}
-								else if(typeof inputResource.delegation[j]=='object')
-								{
-									if($(href[1]).text().match(inputResource.delegation[j]) != null)
-										enabled=true;
-								}
+							var enabled=false;
+							if(inputResource.delegation instanceof Array && inputResource.delegation.length>0)
+							{
+								for(var j=0; j<inputResource.delegation.length; j++)
+									if(typeof inputResource.delegation[j]=='string')
+									{
+										var index=href.indexOf(inputResource.delegation[j]);
+										if(index!=-1)
+											if(href.length==(index+inputResource.delegation[j].length))
+												enabled=true;
+									}
+									else if(typeof inputResource.delegation[j]=='object')
+									{
+										if(href.match(inputResource.delegation[j])!=null)
+											enabled=true;
+									}
+							}
+							else
+								enabled=true;
+
+							if(enabled)
+							{
+								globalAccountSettings[globalAccountSettings.length]=$.extend({}, inputResource);
+								globalAccountSettings[globalAccountSettings.length-1].type=inputResource.type;
+								globalAccountSettings[globalAccountSettings.length-1].href=decodeURIComponent(hostPart+href);
+								globalAccountSettings[globalAccountSettings.length-1].userAuth={userName: inputResource.userAuth.userName, userPassword: inputResource.userAuth.userPassword};
+							}
 						}
-						else
-							enabled=true;
-							
-						if(enabled)
-						{
-							globalAccountSettings[globalAccountSettings.length]=$.extend({}, inputResource);
-							globalAccountSettings[globalAccountSettings.length-1].type=inputResource.type;
-							globalAccountSettings[globalAccountSettings.length-1].href=decodeURIComponent(hostPart+$(href[1]).text());
-							globalAccountSettings[globalAccountSettings.length-1].userAuth = { userName : inputResource.userAuth.userName, userPassword : inputResource.userAuth.userPassword};
-						}
-						
 					}
-				});
-			}		
+				);
+			}
+
 			if(index==lastIndex)
 			{
 				// start the client
 				if(isAvaible('CardDavMATE'))
-				{
 					runCardDAV();
-				}
 				if(isAvaible('CalDavZAP'))
 					runCalDAV();
 				if(isAvaible('Projects'))
 					runProjects();
 				if(isAvaible('Settings'))
 					runSettings();
-				globalResourceNumber = globalAccountSettings.length;
+				globalResourceNumber=globalAccountSettings.length;
 				loadAllResources();
 			}
 		}
@@ -900,80 +894,83 @@ function netFindResource(inputResource, inputResourceIndex, forceLoad, indexR)
 
 function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex, forceLoad, indexR)
 {
-	var re=new RegExp('^(https?://)([^/]+)','i');
-	if(!isAvaible('CardDavMATE') || !globalCardDAVInitLoad || (globalCardDAVInitLoad && typeof inputResource.addressbookNo == 'undefined'))
+	if(!isAvaible('CardDavMATE') || !globalCardDAVInitLoad || (globalCardDAVInitLoad && typeof inputResource.addressbookNo=='undefined'))
 		inputResource.addressbookNo=0;
-	if(!isAvaible('CalDavZAP') || !globalCalDAVInitLoad || (globalCalDAVInitLoad && typeof globalAccountSettings[indexR].calendarNo == 'undefined' && typeof globalAccountSettings[indexR].todoNo == 'undefined'))
+	if(!isAvaible('CalDavZAP') || !globalCalDAVInitLoad || (globalCalDAVInitLoad && typeof inputResource.calendarNo=='undefined' && typeof inputResource.todoNo=='undefined'))
 	{
-		globalAccountSettings[indexR].calendarNo=0;
-		globalAccountSettings[indexR].todoNo=0;
+		inputResource.calendarNo=0;
+		inputResource.todoNo=0;
 	}
+
+	var re=new RegExp('^(https?://)([^/]+)','i');
 	var tmp=inputResource.abhref.match(re);
 	var baseHref=tmp[1]+tmp[2];
 	var uidBase=tmp[1]+inputResource.userAuth.userName+'@'+tmp[2];
 
 	var tmp=inputResource.href.match(RegExp('^(https?://)(.*)','i'));
 	var origUID=tmp[1]+inputResource.userAuth.userName+'@'+tmp[2];
-	
+
 	if(typeof globalSubscribedCalendars!='undefined' && globalSubscribedCalendars!=null && typeof inputResource.calendars!='undefined' && inputResource.calendars!=null && inputResource.calendars.length>0)
 	{
 		var tmp1=inputResource.href.match(RegExp('^(https?://)(.*)', 'i'));
 		var origUID1=tmp1[1]+inputResource.userAuth.userName+'@'+tmp1[2];
 		var resultTimestamp=new Date().getTime();
-		for(var k=0; k<globalSubscribedCalendars.calendars.length;k++)
+		for(var k=0; k<globalSubscribedCalendars.calendars.length; k++)
 		{
-			color = globalSubscribedCalendars.calendars[k].color;
+			var color=globalSubscribedCalendars.calendars[k].color;
 			if(color=='')
 			{
 				var par=(uidBase+globalSubscribedCalendars.calendars[k].href).split('/');
 				var hash=hex_sha256(hex_sha256(par[par.length-3]+'/'+par[par.length-2]+'/'));
-				var hex=hash.substring(0,6);
+				var hex=hash.substring(0, 6);
 				while(checkColorBrightness(hex)>=252)
-					hex=hex_sha256(hex_sha256(hash)).substring(0,6);
+					hex=hex_sha256(hex_sha256(hash)).substring(0, 6);
 				color='#'+hex;
 			}
-			var syncRequired = true;
-			var uidPArts = (uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/').split('/');
+
+			var syncRequired=true;
+			var uidPArts=(uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/').split('/');
 			if(globalSubscribedCalendars.calendars[k].typeList.indexOf('vevent')!=-1)
 			{
 				var uidParts=(uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/').match(RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@(.*)'));
-				var checkHref = uidParts[1]+uidParts[3];
+				var checkHref=uidParts[1]+uidParts[3];
 				if(!isHrefSet)
 				{
-					saveHref = uidBase+href;
-					isHrefSet = true;
+					saveHref=uidBase+href;
+					isHrefSet=true;
 				}
 				if(!globalDefaultCalendarCollectionLoadAll)
-					var toBeLoad = (globalSettings.loadedcalendarcollections.indexOf(checkHref)!=-1);
+					var toBeLoad=(globalSettings.loadedcalendarcollections.indexOf(checkHref)!=-1);
 				else
 				{
 					if(globalCalDAVInitLoad)
 						globalSettings.loadedcalendarcollections.push(checkHref);
-					var toBeLoad = true;
+					var toBeLoad=true;
 				}
-				globalResourceCalDAVList.insertResource({makeLoaded:toBeLoad , typeList:globalSubscribedCalendars.calendars[k].typeList,listType:'vevent', syncRequired:syncRequired, ecolor: color, timestamp: resultTimestamp, uid: uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/', timeOut: inputResource.timeOut, displayvalue: globalSubscribedCalendars.calendars[k].displayName, userAuth: globalSubscribedCalendars.calendars[k].userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID1, href: globalSubscribedCalendars.calendars[k].href, hrefLabel: globalSubscribedCalendars.hrefLabel, showHeader: globalSubscribedCalendars.showHeader, permissions: {full: [], read_only: true}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null,subscription: true, newlyAdded:toBeLoad, urlArray: new Array(), ignoreAlarms:globalSubscribedCalendars.calendars[k].ignoreAlarm,webdav_bind:false}, indexR, true);
+				globalResourceCalDAVList.insertResource({makeLoaded: toBeLoad, typeList: globalSubscribedCalendars.calendars[k].typeList, listType: 'vevent', syncRequired: syncRequired, ecolor: color, timestamp: resultTimestamp, uid: uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/', timeOut: inputResource.timeOut, displayvalue: globalSubscribedCalendars.calendars[k].displayName, userAuth: globalSubscribedCalendars.calendars[k].userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID1, href: globalSubscribedCalendars.calendars[k].href, hrefLabel: globalSubscribedCalendars.hrefLabel, showHeader: globalSubscribedCalendars.showHeader, permissions: {full: [], read_only: true}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null, subscription: true, newlyAdded:toBeLoad, urlArray: new Array(), ignoreAlarms: globalSubscribedCalendars.calendars[k].ignoreAlarm, webdav_bind: false}, indexR, true);
 				if(inputResource!=undefined)
 					inputResource.calendarNo++;
-				syncRequired = false;
+				syncRequired=false;
 			}
+
 			if(globalSubscribedCalendars.calendars[k].typeList.indexOf('vtodo')!=-1)
 			{
 				var uidParts=(uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/').match(RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@(.*)'));
-				var checkHref = uidParts[1]+uidParts[3];
+				var checkHref=uidParts[1]+uidParts[3];
 				if(!isHrefSet)
 				{
-					saveHref = uidBase+href;
-					isHrefSet = true;
+					saveHref=uidBase+href;
+					isHrefSet=true;
 				}
 				if(!globalDefaultTodoCalendarCollectionLoadAll)
-					var toBeLoad = (globalSettings.loadedtodocollections.indexOf(checkHref)!=-1);
+					var toBeLoad=(globalSettings.loadedtodocollections.indexOf(checkHref)!=-1);
 				else
 				{
-					var toBeLoad = true;
+					var toBeLoad=true;
 					if(globalCalDAVInitLoad)
 						globalSettings.loadedtodocollections.push(checkHref);
 				}
-				globalResourceCalDAVList.insertResource({makeLoaded:toBeLoad, typeList:globalSubscribedCalendars.calendars[k].typeList,listType:'vtodo', syncRequired:syncRequired, ecolor: color, timestamp: resultTimestamp, uid: uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/', timeOut: inputResource.timeOut, displayvalue: globalSubscribedCalendars.calendars[k].displayName, userAuth: globalSubscribedCalendars.calendars[k].userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID1, href: globalSubscribedCalendars.calendars[k].href, hrefLabel: globalSubscribedCalendars.hrefLabel, showHeader: globalSubscribedCalendars.showHeader, permissions: {full: [], read_only: true}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null,subscription: true, newlyAdded:toBeLoad, urlArray: new Array(), ignoreAlarms:globalSubscribedCalendars.calendars[k].ignoreAlarm,webdav_bind:false}, indexR, false);
+				globalResourceCalDAVList.insertResource({makeLoaded: toBeLoad, typeList: globalSubscribedCalendars.calendars[k].typeList, listType:'vtodo', syncRequired: syncRequired, ecolor: color, timestamp: resultTimestamp, uid: uidBase+'/'+globalSubscribedCalendars.calendars[k].href+'/', timeOut: inputResource.timeOut, displayvalue: globalSubscribedCalendars.calendars[k].displayName, userAuth: globalSubscribedCalendars.calendars[k].userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID1, href: globalSubscribedCalendars.calendars[k].href, hrefLabel: globalSubscribedCalendars.hrefLabel, showHeader: globalSubscribedCalendars.showHeader, permissions: {full: [], read_only: true}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null, subscription: true, newlyAdded: toBeLoad, urlArray: new Array(), ignoreAlarms: globalSubscribedCalendars.calendars[k].ignoreAlarm, webdav_bind: false}, indexR, false);
 				if(inputResource!=undefined)
 					inputResource.todoNo++;
 			}
@@ -990,56 +987,55 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 		return true;
 	}
 	
-	var settingsXML = '';
+	var settingsXML='';
 	if(inputResource.href.indexOf(globalLoginUsername)!=-1 && inputResource.settingsAccount && globalSettings.settingstype!='' && globalSettings.settingstype!=null)
-		if((globalSettings.settingstype=='addressbook-home-set' && inputResource.abhref == inputHref) || (globalSettings.settingstype=='calendar-home-set' && inputResource.cahref == inputHref))
-			settingsXML = '<I:settings xmlns:I="http://inf-it.com/ns/dav/"/>';
-	
+		if((globalSettings.settingstype=='addressbook-home-set' && inputResource.abhref==inputHref) || (globalSettings.settingstype=='calendar-home-set' && inputResource.cahref==inputHref))
+			settingsXML='<I:settings xmlns:I="http://inf-it.com/ns/dav/"/>';
+
 	$.ajax({
 		type: 'PROPFIND',
 		url: inputHref,
 		cache: false,
 		crossDomain: (typeof inputResource.crossDomain=='undefined' ? true : inputResource.crossDomain),
-		xhrFields: {
+		xhrFields:
+		{
 			withCredentials: (typeof inputResource.withCredentials=='undefined' ? false : inputResource.withCredentials)
 		},
 		timeout: inputResource.timeOut,
-		error: function(objAJAXRequest, strError){
+		error: function(objAJAXRequest, strError)
+		{
 			console.log("Error: [netLoadResource: '"+uidBase+"'] code: '"+objAJAXRequest.status+"'"+(objAJAXRequest.status==0 ? ' - see http://www.inf-it.com/'+globalAppName.toLowerCase()+'/misc/readme_network.txt' : ''));
 
 			$('#SystemCalDavZAP .fc-header-center').addClass('r_error_all');
-			
+
 			if(typeof globalResourceErrorCounter!='undefined' && globalResourceErrorCounter!=null)
 				globalResourceErrorCounter++;
-			
+
 			if(hrefMode)
 				netLoadResource(inputResource, inputResource.cahref, false, inputResourceIndex, forceLoad, indexR);
 			else
 			{
 				indexR++;
 				if(indexR==globalAccountSettings.length)
-				{
 					$('#MainLoader').fadeOut(1200);
-				}
 				netFindResource(globalAccountSettings[indexR], inputResourceIndex, forceLoad, indexR);
 			}
 			return false;
 		},
-		beforeSend: function(req){
+		beforeSend: function(req)
+		{
 			if(globalSettings.usejqueryauth!=true && inputResource.userAuth.userName!='' && inputResource.userAuth.userPassword!='')
 				req.setRequestHeader('Authorization', basicAuth(inputResource.userAuth.userName, inputResource.userAuth.userPassword));
 
 			req.setRequestHeader('X-client', globalXClientHeader);
 			req.setRequestHeader('Depth', '1');
-			if((isAvaible('CardDavMATE') && (!globalCardDAVInitLoad && !globalCardDAVResourceSync)) || (isAvaible('CalDavZAP') && (!globalCalDAVInitLoad && !globalCalDAVResourceSync))||(isAvaible('Projects') && isProjectsLoaded))
+			if((isAvaible('CardDavMATE') && (!globalCardDAVInitLoad && !globalCardDAVResourceSync)) || (isAvaible('CalDavZAP') && (!globalCalDAVInitLoad && !globalCalDAVResourceSync)) || (isAvaible('Projects') && isProjectsLoaded))
 				/* XXX - System display:none changes */
 				if(isAvaible('Settings') && $('#SystemSettings').css('visibility')=='visible' && $('.resourceSettings.resourceSettings_selected').attr('data-type')=='Password')
 			{
 				indexR++;
 				if(indexR==globalAccountSettings.length)
-				{
 					$('#MainLoader').fadeOut(1200);
-				}
 				netFindResource(globalAccountSettings[indexR], inputResourceIndex, forceLoad, indexR);
 				return false;
 			}
@@ -1052,16 +1048,17 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 		dataType: 'xml',
 		complete: function(xml, textStatus)
 		{
-			var Rname='';
 			if(textStatus!='success')
 				return false;
+
+			var Rname='';
 			var saveHref = '';
-			isHrefSet = false;
+			isHrefSet=false;
 			var calendarNo=0;
 			var resultTimestamp=new Date().getTime();
 			if(!settingsLoaded && inputResource.href.indexOf(globalLoginUsername)!=-1 && inputResource.settingsAccount && globalSettings.settingstype!='' && globalSettings.settingstype!=null)
 			{
-				if((globalSettings.settingstype=='addressbook-home-set' && inputResource.abhref == inputHref) || (globalSettings.settingstype=='calendar-home-set' && inputResource.cahref == inputHref))
+				if((globalSettings.settingstype=='addressbook-home-set' && inputResource.abhref==inputHref) || (globalSettings.settingstype=='calendar-home-set' && inputResource.cahref==inputHref))
 				{
 					var settings=$(xml.responseXML).children().filterNsNode('multistatus').children().filterNsNode('response').children().filterNsNode('propstat').children().filterNsNode('prop').children().filterNsNode('settings').text();
 					if(settings!='')
@@ -1091,15 +1088,15 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 						{
 							if(isAvaible('CalDavZAP'))
 							{
-								globalDefaultCalendarCollectionActiveAll = true;
-								globalDefaultTodoCalendarCollectionActiveAll = true;
-								globalDefaultTodoCalendarCollectionLoadAll = true;
-								globalDefaultCalendarCollectionLoadAll = true;
+								globalDefaultCalendarCollectionActiveAll=true;
+								globalDefaultTodoCalendarCollectionActiveAll=true;
+								globalDefaultTodoCalendarCollectionLoadAll=true;
+								globalDefaultCalendarCollectionLoadAll=true;
 							}
 							if(isAvaible('CardDavMATE'))
 							{
-								globalDefaultAddressbookCollectionActiveAll = true;
-								globalDefaultAddrCollectionLoadAll = true;
+								globalDefaultAddressbookCollectionActiveAll=true;
+								globalDefaultAddrCollectionLoadAll=true;
 							}
 							loadSettings(JSON.stringify(globalSettings));
 						}
@@ -1110,30 +1107,30 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 			{
 				if(isAvaible('CalDavZAP'))
 				{
-					globalDefaultCalendarCollectionActiveAll = true;
-					globalDefaultTodoCalendarCollectionActiveAll = true;
-					globalDefaultTodoCalendarCollectionLoadAll = true;
-					globalDefaultCalendarCollectionLoadAll = true;
+					globalDefaultCalendarCollectionActiveAll=true;
+					globalDefaultTodoCalendarCollectionActiveAll=true;
+					globalDefaultTodoCalendarCollectionLoadAll=true;
+					globalDefaultCalendarCollectionLoadAll=true;
 				}
 				if(isAvaible('CardDavMATE'))
 				{
-					globalDefaultAddressbookCollectionActiveAll = true;
-					globalDefaultAddrCollectionLoadAll = true;
+					globalDefaultAddressbookCollectionActiveAll=true;
+					globalDefaultAddrCollectionLoadAll=true;
 				}
 				loadSettings(JSON.stringify(globalSettings));
 			}
+
 			$(xml.responseXML).children().filterNsNode('multistatus').children().filterNsNode('response').each(function(index, element){
 				$(element).children().filterNsNode('propstat').each(function(pindex, pelement){
 					var resources=$(pelement).children().filterNsNode('prop');
 					var color='';
 
-					var typeList = new Array();
+					var typeList=new Array();
 					resources.children().filterNsNode('supported-calendar-component-set').children().filterNsNode('comp').each(function(pindex, pelement){
-						typeList[typeList.length] = pelement.getAttribute('name').toLowerCase();
+						typeList[typeList.length]=pelement.getAttribute('name').toLowerCase();
 					});
 					
-					if(typeof inputResource!='undefined' && typeof inputResource.collectionTypes!='undefined' && inputResource.collectionTypes!=null && inputResource.collectionTypes.indexOf('calendar')!=-1 ||
-						typeof inputResource=='undefined' || inputResource.collectionTypes==null)
+					if(typeof inputResource!='undefined' && typeof inputResource.collectionTypes!='undefined' && inputResource.collectionTypes!=null && inputResource.collectionTypes.indexOf('calendar')!=-1 || typeof inputResource=='undefined' || inputResource.collectionTypes==null)
 						if((isAvaible('CalDavZAP') && resources.children().filterNsNode('resourcetype').children().filterNsNode('calendar').length==1 && resources.children().filterNsNode('resourcetype').children().filterNsNode('collection').length==1) && (inputResource.ignoreBound==undefined || !(inputResource.ignoreBound==true && resources.children().filterNsNode('resourcetype').children().filterNsNode('webdav-binding').length==1)))
 						{
 							if(resources.children().filterNsNode('calendar-color').length==1)
@@ -1182,13 +1179,14 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 								else 
 									read_only=true;
 							}
+
 							var displayvalue=resources.children().filterNsNode('displayname').text();
 							var headervalue=resources.children().filterNsNode('headervalue').text();
 							var synctoken=resources.children().filterNsNode('sync-token').text();
 							var oldSyncToken = '';
 							var tmp_dv=href.match(RegExp('.*/([^/]+)/$', 'i'));
 
-							if(displayvalue=='') // MacOSX Lion Server
+							if(displayvalue=='') // OS X Server
 								displayvalue=tmp_dv[1];
 
 							if(color=='')
@@ -1200,28 +1198,29 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 									hex=hex_sha256(hex_sha256(hash)).substring(0,6);
 								color='#'+hex;
 							}
-							var ignoreAlarms = false;
-							var uidPArts = (uidBase+href).split('/');
-							if(typeof inputResource.ignoreAlarms =='boolean' && inputResource.ignoreAlarms)
-								ignoreAlarms = true;
+
+							var ignoreAlarms=false;
+							var uidPArts=(uidBase+href).split('/');
+							if(typeof inputResource.ignoreAlarms=='boolean' && inputResource.ignoreAlarms)
+								ignoreAlarms=true;
 							else if(inputResource.ignoreAlarms instanceof Array && inputResource.ignoreAlarms.length>0)
 							{
 								for(var j=0; j<inputResource.ignoreAlarms.length; j++)
 								{
 									if(typeof inputResource.ignoreAlarms[j]=='string')
 									{
-										var index = href.indexOf(inputResource.ignoreAlarms[j]);
+										var index=href.indexOf(inputResource.ignoreAlarms[j]);
 										if(index!=-1)
-											if(href.length == (index+inputResource.ignoreAlarms[j].length))
+											if(href.length==(index+inputResource.ignoreAlarms[j].length))
 												ignoreAlarms=true;
 									}
 									else if (typeof inputResource.ignoreAlarms[j]=='object' && href.match(inputResource.ignoreAlarms[j])!=null)
-										ignoreAlarms = true;
+										ignoreAlarms=true;
 								}
 							}
 
 							// insert the resource
-							var webdav_bind = false;
+							var webdav_bind=false;
 							if(resources.children().filterNsNode('resourcetype').children().filterNsNode('webdav-binding').length==1)
 								webdav_bind=true;
 
@@ -1230,74 +1229,76 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 							var syncRequired=true;
 							if(typeList.indexOf('vevent')!=-1)
 							{
-								var someChanged = false;
-								var existingResource = globalResourceCalDAVList.getEventCollectionByUID(uidBase+href);
+								var someChanged=false;
+								var existingResource=globalResourceCalDAVList.getEventCollectionByUID(uidBase+href);
 								if(existingResource!=null)
 								{
-									if(existingResource.syncToken != synctoken)
-										someChanged = true;
+									if(existingResource.syncToken!=synctoken)
+										someChanged=true;
 								}
 								else
 								{
-									someChanged = true;
+									someChanged=true;
 									if(synctoken=='')
-										synctoken = null;
+										synctoken=null;
 								}
+
 								var uidParts=(uidBase+href).match(RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@(.*)'));
-								var checkHref = uidParts[1]+uidParts[3];
+								var checkHref=uidParts[1]+uidParts[3];
 								if(!isHrefSet)
 								{
-									saveHref = uidBase+href;
-									isHrefSet = true;
+									saveHref=uidBase+href;
+									isHrefSet=true;
 								}
 								if(!globalDefaultCalendarCollectionLoadAll)
-									var toBeLoad = (globalSettings.loadedcalendarcollections.indexOf(checkHref)!=-1);
+									var toBeLoad=(globalSettings.loadedcalendarcollections.indexOf(checkHref)!=-1);
 								else
 								{
-									var toBeLoad = true;
+									var toBeLoad=true;
 									if(globalCalDAVInitLoad)
 										globalSettings.loadedcalendarcollections.push(checkHref);
 								}
 								if(!toBeLoad)
 									oldSyncToken='';
-								globalResourceCalDAVList.insertResource({makeLoaded:toBeLoad, typeList:typeList, listType:'vevent', ecolor: color, timestamp: resultTimestamp, uid: uidBase+href, timeOut: inputResource.timeOut, displayvalue: displayvalue, headervalue:headervalue, userAuth: inputResource.userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID, href: href, hrefLabel: inputResource.hrefLabel, showHeader: inputResource.showHeader, permissions: {full: permissions, read_only: read_only}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null, subscription: false, newlyAdded:toBeLoad, urlArray:null, ignoreAlarms:ignoreAlarms,webdav_bind:webdav_bind, syncRequired:syncRequired, checkContentType: checkContentType, syncToken: synctoken, oldSyncToken: oldSyncToken, someChanged:someChanged}, indexR, true);
+								globalResourceCalDAVList.insertResource({makeLoaded: toBeLoad, typeList: typeList, listType: 'vevent', ecolor: color, timestamp: resultTimestamp, uid: uidBase+href, timeOut: inputResource.timeOut, displayvalue: displayvalue, headervalue: headervalue, userAuth: inputResource.userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID, href: href, hrefLabel: inputResource.hrefLabel, showHeader: inputResource.showHeader, permissions: {full: permissions, read_only: read_only}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null, subscription: false, newlyAdded: toBeLoad, urlArray:null, ignoreAlarms: ignoreAlarms, webdav_bind: webdav_bind, syncRequired: syncRequired, checkContentType: checkContentType, syncToken: synctoken, oldSyncToken: oldSyncToken, someChanged: someChanged}, indexR, true);
 								if(globalAccountSettings[indexR]!=undefined)
 									globalAccountSettings[indexR].calendarNo++;
-								syncRequired = false;
+
+								syncRequired=false;
 							}
 							if(typeList.indexOf('vtodo')!=-1)
 							{
-								var someChanged = false;
-								var existingResource = globalResourceCalDAVList.getTodoCollectionByUID(uidBase+href);
+								var someChanged=false;
+								var existingResource=globalResourceCalDAVList.getTodoCollectionByUID(uidBase+href);
 								if(syncRequired && existingResource!=null)
 								{
-									if(existingResource.syncToken != synctoken)
-										someChanged = true;
+									if(existingResource.syncToken!=synctoken)
+										someChanged=true;
 								}
 								else
 								{
-									someChanged = true;
+									someChanged=true;
 									if(synctoken=='')
-										synctoken = null;
+										synctoken=null;
 								}
 								var uidParts=(uidBase+href).match(RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@(.*)'));
-								var checkHref = uidParts[1]+uidParts[3];
+								var checkHref=uidParts[1]+uidParts[3];
 								if(!isHrefSet)
 								{
-									saveHref = uidBase+href;
-									isHrefSet = true;
+									saveHref=uidBase+href;
+									isHrefSet=true;
 								}
 								if(!globalDefaultTodoCalendarCollectionLoadAll)
-									var toBeLoad = (globalSettings.loadedtodocollections.indexOf(checkHref)!=-1);
+									var toBeLoad=(globalSettings.loadedtodocollections.indexOf(checkHref)!=-1);
 								else
 								{
-									var toBeLoad = true;
+									var toBeLoad=true;
 									if(globalCalDAVInitLoad)
 										globalSettings.loadedtodocollections.push(checkHref);
 								}
 								if(!toBeLoad)
 									oldSyncToken='';
-								globalResourceCalDAVList.insertResource({makeLoaded:toBeLoad , typeList:typeList, hrefArray: new Array(), listType:'vtodo', ecolor: color, timestamp: resultTimestamp, uid: uidBase+href, timeOut: inputResource.timeOut, displayvalue: displayvalue, headervalue: headervalue, userAuth: inputResource.userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID, href: href, hrefLabel: inputResource.hrefLabel, showHeader: inputResource.showHeader, permissions: {full: permissions, read_only: read_only}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null, subscription: false, newlyAdded:toBeLoad, urlArray:null, ignoreAlarms:ignoreAlarms,webdav_bind:webdav_bind,syncRequired:syncRequired, checkContentType: checkContentType, syncToken: synctoken, oldSyncToken: oldSyncToken, someChanged:someChanged}, indexR, false);
+								globalResourceCalDAVList.insertResource({makeLoaded: toBeLoad , typeList: typeList, hrefArray: new Array(), listType: 'vtodo', ecolor: color, timestamp: resultTimestamp, uid: uidBase+href, timeOut: inputResource.timeOut, displayvalue: displayvalue, headervalue: headervalue, userAuth: inputResource.userAuth, resourceIndex: indexR, url: baseHref, accountUID: origUID, href: href, hrefLabel: inputResource.hrefLabel, showHeader: inputResource.showHeader, permissions: {full: permissions, read_only: read_only}, crossDomain: inputResource.crossDomain, withCredentials: inputResource.withCredentials, interval: null, waitInterval: null, displayEventsArray: new Array(), pastUnloaded: '', fcSource: null, subscription: false, newlyAdded: toBeLoad, urlArray:null, ignoreAlarms: ignoreAlarms, webdav_bind: webdav_bind, syncRequired: syncRequired, checkContentType: checkContentType, syncToken: synctoken, oldSyncToken: oldSyncToken, someChanged:someChanged}, indexR, false);
 								if(globalAccountSettings[indexR]!=undefined)
 									globalAccountSettings[indexR].todoNo++;
 							}
@@ -1351,7 +1352,7 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 								{
 									var par=(uidBase+href).split('/');
 									var hash=hex_sha256(hex_sha256(par[par.length-3]+'/'+par[par.length-2]+'/'));
-									var hex=hash.substring(0,6);
+									var hex=hash.substring(0, 6);
 									while(checkColorBrightness(hex)>=252)
 										hex=hex_sha256(hex_sha256(hash)).substring(0,6);
 									color='#'+hex;
@@ -1370,20 +1371,20 @@ function netLoadResource(inputResource, inputHref, hrefMode, inputResourceIndex,
 								{
 									someChanged=true;
 									if(synctoken=='')
-										synctoken = null;
+										synctoken=null;
 								}
 								var uidParts=(uidBase+href).match(RegExp('^(https?://)([^@/]+(?:@[^@/]+)?)@(.*)'));
-								var checkHref = uidParts[1]+uidParts[3];
+								var checkHref=uidParts[1]+uidParts[3];
 								if(!isHrefSet)
 								{
-									saveHref = uidBase+href;
-									isHrefSet = true;
+									saveHref=uidBase+href;
+									isHrefSet=true;
 								}
 								if(!globalDefaultAddrCollectionLoadAll)
-									var toBeLoad = (globalSettings.loadedaddressbookcollections.indexOf(checkHref)!=-1);
+									var toBeLoad=(globalSettings.loadedaddressbookcollections.indexOf(checkHref)!=-1);
 								else
 								{
-									var toBeLoad = true;
+									var toBeLoad=true;
 									if(globalCardDAVInitLoad)
 										globalSettings.loadedaddressbookcollections.push(checkHref);
 								}
@@ -1935,7 +1936,7 @@ function CalDAVnetLoadCollection(inputCollection, forceLoad, allSyncMode, recurs
 		var requestText='<?xml version="1.0" encoding="utf-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:getcontenttype/><D:getetag/></D:prop></D:propfind>';
 	else if(globalSettings.eventstartpastlimit==null && globalSettings.eventstartfuturelimit==null)	// all sync turned off
 	{
-		var requestText='<?xml version="1.0" encoding="utf-8"?><D:sync-collection xmlns:D="DAV:"><D:prop><D:getcontenttype/><D:getetag/>/D:prop><D:sync-level>1</D:sync-level>'+(forceLoad==true || inputCollection.syncToken==undefined || inputCollection.syncToken=='' ? '<D:sync-token/>' : '<D:sync-token>'+inputCollection.syncToken+'</D:sync-token>')+'</D:sync-collection>';
+		var requestText='<?xml version="1.0" encoding="utf-8"?><D:sync-collection xmlns:D="DAV:"><D:prop><D:getcontenttype/><D:getetag/></D:prop><D:sync-level>1</D:sync-level>'+(forceLoad==true || inputCollection.syncToken==undefined || inputCollection.syncToken=='' ? '<D:sync-token/>' : '<D:sync-token>'+inputCollection.syncToken+'</D:sync-token>')+'</D:sync-collection>';
 	}
 	else // if inputCollection.forceSyncPROPFIND is undefined or false
 	{
@@ -2053,9 +2054,9 @@ function CalDAVnetLoadCollection(inputCollection, forceLoad, allSyncMode, recurs
 						futureInterval = ' start="'+$.fullCalendar.formatDate(new Date(new Date(globalToLoadedLimitTodo.getTime()).setMonth(globalToLoadedLimitTodo.getMonth()-globalSettings.eventstartfuturelimit-1)) ,"yyyyMMdd'T'HHmmss")+'Z" end="'+$.fullCalendar.formatDate(globalToLoadedLimitTodo,"yyyyMMdd'T'HHmmss")+'Z"';
 				}*/
 				if(!allSyncMode)
-					requestText='<?xml version="1.0" encoding="UTF-8"?><L:calendar-query xmlns:L="urn:ietf:params:xml:ns:caldav"><D:prop xmlns:D="DAV:"><D:getcontenttype/><D:getetag/><L:calendar-data/></D:prop><L:filter><L:comp-filter name="VCALENDAR"><L:comp-filter name="VTODO"><L:time-range'+(globalLimitTodoLoading=='pastTodo' ? pastInterval : futureInterval)+'/></L:comp-filter></L:comp-filter></L:filter></L:calendar-query>';
+					requestText='<?xml version="1.0" encoding="utf-8"?><L:calendar-query xmlns:L="urn:ietf:params:xml:ns:caldav"><D:prop xmlns:D="DAV:"><D:getcontenttype/><D:getetag/><L:calendar-data/></D:prop><L:filter><L:comp-filter name="VCALENDAR"><L:comp-filter name="VTODO"><L:time-range'+(globalLimitTodoLoading=='pastTodo' ? pastInterval : futureInterval)+'/></L:comp-filter></L:comp-filter></L:filter></L:calendar-query>';
 				else
-					requestText='<?xml version="1.0" encoding="UTF-8"?><L:calendar-query xmlns:L="urn:ietf:params:xml:ns:caldav"><D:prop xmlns:D="DAV:"><D:getcontenttype/><D:getetag/><L:calendar-data/></D:prop><L:filter><L:comp-filter name="VCALENDAR"><L:comp-filter name="VTODO"><L:time-range'+pastInterval+futureInterval+'/></L:comp-filter></L:comp-filter></L:filter></L:calendar-query>';
+					requestText='<?xml version="1.0" encoding="utf-8"?><L:calendar-query xmlns:L="urn:ietf:params:xml:ns:caldav"><D:prop xmlns:D="DAV:"><D:getcontenttype/><D:getetag/><L:calendar-data/></D:prop><L:filter><L:comp-filter name="VCALENDAR"><L:comp-filter name="VTODO"><L:time-range'+pastInterval+futureInterval+'/></L:comp-filter></L:comp-filter></L:filter></L:calendar-query>';
 			}
 		}
 	}
@@ -2070,7 +2071,7 @@ function CalDAVnetLoadCollection(inputCollection, forceLoad, allSyncMode, recurs
 		timeout: inputCollection.timeOut,
 		error: function(objAJAXRequest, strError){
 		
-			if((globalSettings.eventstartpastlimit != null || globalSettings.eventstartfuturelimit!=null ) && objAJAXRequest.responseXML!=null && objAJAXRequest.responseXML.children().filterNsNode('C:SUPPORTED-FILTER').length>0)
+			if((globalSettings.eventstartpastlimit != null || globalSettings.eventstartfuturelimit!=null ) && objAJAXRequest.responseXML!=null && $(objAJAXRequest.responseXML).children().filterNsNode('C:SUPPORTED-FILTER').length>0)
 			{
 				globalSettings.eventstartfuturelimit = null;
 				globalSettings.eventstartpastlimit = null;

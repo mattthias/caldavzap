@@ -1,5 +1,14 @@
 CalDavZAP Changelog
 
+version 0.10.0.2 [2014-02-17]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
+- added Ukrainian localization (uk_UA) - thanks Serge Yakimchuck
+- added misc/readme_baikal_sabredav.txt and misc/baikal-flat-0.2.7.diff to solve issues related to storing CalDavZAP properties on SabreDAV and Baïkal - thanks Johannes Zellner
+- fixed invalid XML response processing (SabreDAV and Baïkal)
+- fixed invalid XML request if globalEventStartPastLimit and globalEventStartFutureLimit are set to null
+- fixed "delegation" XML processing 
+- updated French [fr_FR] localization - thanks Jean-Christophe Bach
+
 version 0.10.0.1 [2014-02-04]:
 - note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
 - added Spanish localization (es_ES) - thanks Damián Vila
