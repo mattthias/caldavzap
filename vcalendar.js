@@ -199,11 +199,28 @@ function EventList()
 
 	this.removeOldEvents=function(inputUidBase, inputTimestamp, isEvent)
 	{
-		for(var i=0; i<globalResourceCalDAVList.collections.length;i++)
-			if(globalResourceCalDAVList.collections[i].uid!=undefined)
-				for(event in globalEventList.events[globalResourceCalDAVList.collections[i].uid])
-					if(event.timestamp!=undefined && event.uid.indexOf(inputUidBase)==0 && event.timestamp<inputTimestamp)
-						globalEventList.removeOldEvent(event.uid, true, isEvent);
+		if(isEvent)
+		{
+			for(var i=0; i<globalResourceCalDAVList.collections.length;i++)
+				if(globalResourceCalDAVList.collections[i].uid!=undefined)
+					for(var key in globalEventList.events[globalResourceCalDAVList.collections[i].uid])
+					{
+						var event = globalEventList.events[globalResourceCalDAVList.collections[i].uid][key];
+						if(event.timestamp!=undefined && event.uid.indexOf(inputUidBase)==0 && event.timestamp<inputTimestamp)
+							globalEventList.removeOldEvent(event.uid, true, isEvent);
+					}
+		}
+		else
+		{
+			for(var i=0; i<globalResourceCalDAVList.TodoCollections.length;i++)
+				if(globalResourceCalDAVList.TodoCollections[i].uid!=undefined)
+					for(var key in globalEventList.todos[globalResourceCalDAVList.TodoCollections[i].uid])
+					{
+						var event = globalEventList.todos[globalResourceCalDAVList.TodoCollections[i].uid][key];
+						if(event.timestamp!=undefined && event.uid.indexOf(inputUidBase)==0 && event.timestamp<inputTimestamp)
+							globalEventList.removeOldEvent(event.uid, true, isEvent);
+					}
+		}
 	}
 
 	this.removeOldEvent=function(inputUid, fromInterface, isEvent)

@@ -1,5 +1,11 @@
 CalDavZAP Changelog
 
+version 0.10.0.4 [2014-03-15]:
+- note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
+- added Russian localization (ru_RU) - thanks Александр Симонов
+- fixed synchronization of removed events for servers without sync-collection report support
+- minor translation fixes
+
 version 0.10.0.3 [2014-03-12]:
 - note: do not forget to execute the cache_update.sh script every time you update your configuration or any other file (otherwise your browser will use the previous version of files stored in HTML5 cache); alternatively you can update the cache.manifest manually - edit the second line beginning with "#V 20" to anything else (this file simple needs "some" change)
 - added support for LDAP binding in auth/ldap module (see auth/plugins/ldap_conf.inc)

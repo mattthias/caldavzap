@@ -87,6 +87,7 @@ var globalNetworkCheckSettings={href: location.protocol+'//'+location.hostname+(
 //   nl_NL (Nederlands [Dutch]; thanks Johan Vromans)
 //   sk_SK (Slovenčina [Slovak])
 //   tr_TR (Türkçe [Turkish]; thanks Selcuk Pultar)
+//   ru_RU (Русский [Russian]; thanks Александр Симонов)
 //   uk_UA (Українська [Ukrainian]; thanks Serge Yakimchuck)
 var globalInterfaceLanguage='en_US';
 

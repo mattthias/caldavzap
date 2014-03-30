@@ -111,7 +111,7 @@ var globalActiveApp='';
 var globalAvailableAppsArray=new Array();
 var globalEnableAppSwitch=true;
 var globalAppName='CalDavZAP';
-var globalVersion='0.10.0.3';
+var globalVersion='0.10.0.4';
 var globalVersionCheckURL=(location.protocol=='file:' ? 'http:' : location.protocol)+'//www.inf-it.com/versioncheck/'+globalAppName+'/?v='+globalVersion;
 var globalXClientHeader=globalAppName+' '+globalVersion+' (Inf-IT CalDAV Web Client)';
 var globalResourceNumberCount=0;
