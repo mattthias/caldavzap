@@ -3270,9 +3270,8 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 					{
 						var intOffset=valOffsetFrom.getSecondsFromOffset()*1000;
 						ut.setTime(ut.getTime()+intOffset);
-						untilDate = new Date(ut.getTime());
 					}
-
+					untilDate = new Date(ut.getTime());
 				}
 				else
 				{
@@ -3479,7 +3478,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 					var count=untilDate-varDate;
 				else
 					var count = until - realRepeatCount;
-				if(count<0)
+				if(isUntilDate&&count<0 || !isUntilDate&&count<=0)
 					break;
 				else
 				{

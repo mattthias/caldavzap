@@ -183,14 +183,8 @@ var globalCalendarEndOfBusiness=17;
 // see http://arshaw.com/fullcalendar/docs/utilities/formatDate/ for exact formating rules
 //var globalTimeFormatAgenda='';
 
-// display todo list instead of calendar at startup
-var globalDefaultDisplayTodo=false;
-
 // display hidden events with certain transparency (true) or remove them from the calendar completely (false)
 var globalDisplayHiddenEvents=false;
-
-// don't display already expired todos
-var globalTodoHideExpired=false;
 
 // turn on timezone support for "time events", otherwise local time is used
 var globalTimeZoneSupport=true;
@@ -238,4 +232,4 @@ var globalWeekendDays=[0, 6];
 var globalAppleRemindersMode=true;
 
 // array of subscribed (read-only) calendars; each calendar is identified by an url address (for example: http://something.com/calendar.ics)
-//var globalSubscribedCalendars={hrefLabel: 'Subscribed', showHeader: true, calendars: [{displayName: 'Subscribed Calendar', href: 'http://something.com/calendar.ics', userAuth: {userName: '', userPassword: ''}, ignoreAlarm: true, color: '#ff0000'}]};
+//var globalSubscribedCalendars={hrefLabel: 'Subscribed', showHeader: true, calendars: [{displayName: 'Subscribed Calendar', href: 'http://something.com/calendar.ics', userAuth: {userName: '', userPassword: ''}, ignoreAlarm: true, color: '#ff0000', typeList: ['vevent','vtodo']}]};
