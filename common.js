@@ -1,6 +1,6 @@
 /*
 CalDavZAP - the open source CalDAV Web Client
-Copyright (C) 2011-2013
+Copyright (C) 2011-2014
     Jan Mate <jan.mate@inf-it.com>
     Andrej Lezo <andrej.lezo@inf-it.com>
     Matej Mihalik <matej.mihalik@inf-it.com>
@@ -92,7 +92,19 @@ String.prototype.customCompare=function(stringB, alphabet, dir, caseSensitive)
 			stringB=stringB.toLowerCase();
 		}
 		while(stringA.charAt(pos)===stringB.charAt(pos) && pos<min){pos++;}
-		return (stringA.charAt(pos)=='' || alphabet.indexOf(stringA.charAt(pos))<alphabet.indexOf(stringB.charAt(pos))) ? -dir : dir;
+
+		if(stringA.charAt(pos)=='')
+			return -dir;
+		else
+		{
+			var index1=alphabet.indexOf(stringA.charAt(pos));
+			var index2=alphabet.indexOf(stringB.charAt(pos));
+
+			if(index1==-1 || index2==-1)
+				return stringA.localeCompare(stringB);
+			else
+				return (index1<index2 ? -dir : dir);
+		}
 	}
 }
 
@@ -100,6 +112,15 @@ function customResourceCompare(objA, objB)
 {
 	return objA.displayValue.customCompare(objB.displayValue, globalSortAlphabet, 1, false);
 }
+
+function checkColorBrightness(hex)
+{
+	var R=parseInt(hex.substring(0, 2), 16);
+	var G=parseInt(hex.substring(2, 4), 16);
+	var B=parseInt(hex.substring(4, 6), 16);
+	return Math.sqrt(0.241*R*R+0.691*G*G+0.068*B*B);
+}
+
 // Get unique values from array
 Array.prototype.unique=function()
 {
@@ -129,7 +150,7 @@ Number.prototype.pad=function(size){
 }
 
 // Case insensitive search for attributes
-// Usage:	$('[id=vcard_editor]').find(':attrCaseInsensitive(data-type,"'+typeList[i]+'")')
+// Usage:	$('#selector').find(':attrCaseInsensitive(data-type,"'+typeList[i]+'")')
 jQuery.expr[':'].attrCaseInsensitive=function(elem, index, match)
 {
 	var matchParams=match[3].split(','),
@@ -138,10 +159,101 @@ jQuery.expr[':'].attrCaseInsensitive=function(elem, index, match)
 	return jQuery(elem)['attr'](attribute)!=undefined && jQuery(elem)['attr'](attribute)==value;
 }
 
+// Capitalize given string
+function capitalize(string)
+{
+	return string.charAt(0).toUpperCase()+string.slice(1).toLowerCase();
+}
+
+function hexToRgb(hex, transparency) {
+	var bigint=parseInt(hex.substring(1), 16);
+	var r=(bigint >> 16) & 255;
+	var g=(bigint >> 8) & 255;
+	var b=bigint & 255;
+
+	return 'rgba('+r+','+g+','+b+','+transparency+')';
+}
+
+function dataGetChecked(resourceListSelector)
+{
+	var checkedArr=$(resourceListSelector).find('input[type=checkbox]:visible:checked').filter('[data-id]').filter(function(){return this.indeterminate==false}).map(function(){return $(this).attr('data-id')}).get();
+
+	for(i=checkedArr.length-1; i>=0; i--)
+		if(checkedArr[i].match(new RegExp('[^/]$'))!=null && checkedArr.indexOf(checkedArr[i].replace(new RegExp('[^/]+$'), ''))!=-1)
+			checkedArr.splice(i, 1);
+
+	return checkedArr;
+}
+
+function resourceChBoxClick(obj, resourceListSelector, headerSelector, returnChecked)
+{
+	$(obj).parent().nextUntil(headerSelector).find('input[type=checkbox]:visible').prop('checked', $(obj).prop('checked')).prop('indeterminate', false);
+	if(returnChecked)
+		return dataGetChecked(resourceListSelector);
+}
+
+function collectionChBoxClick(obj, resourceListSelector, headerSelector, collectionSelector, groupSelector, returnChecked)
+{
+	if(collectionSelector.match('_item$'))
+	{
+		var tmp_coh=$(obj).parent().prevAll(headerSelector).first();
+		var tmp_co_chbxs=tmp_coh.nextUntil(headerSelector).find('input[type=checkbox]:visible');
+	}
+	else
+	{
+		var tmp_coh=$(obj).parent().parent().prevAll(headerSelector).first();
+		var tmp_co_chbxs=tmp_coh.nextUntil(headerSelector).find(collectionSelector).find('input[type=checkbox]:visible');
+	}
+
+	if(groupSelector!=null)
+	{
+		if($(obj).prop('checked')==false && $(obj).prop('indeterminate')==false && $(obj).attr('data-ind')=='false' &&
+		$(obj).parent().next(groupSelector).height()>0/* note: ':visible' is not working! */)
+		{
+			$(obj).prop('indeterminate', true);
+			$(obj).prop('checked', true);
+			$(obj).attr('data-ind', 'true');
+			tmp_coh.find('input[type=checkbox]:visible').prop('indeterminate', true).prop('checked', false);
+
+			if(returnChecked)
+				return dataGetChecked(resourceListSelector);
+			return true;
+		}
+		else if($(obj).attr('data-ind')=='true')
+			$(obj).attr('data-ind', 'false');
+
+		$(obj).parent().next(groupSelector).find('input[type=checkbox]').prop('checked', $(obj).prop('checked'));
+	}
+
+	if(tmp_co_chbxs.length==tmp_co_chbxs.filter(':checked').length)
+		tmp_coh.find('input[type=checkbox]:visible').prop('checked', true).prop('indeterminate', false);
+	else if(tmp_co_chbxs.filter(':checked').length==0 && tmp_co_chbxs.filter(function(){return this.indeterminate==true}).length==0)
+		tmp_coh.find('input[type=checkbox]:visible').prop('checked', false).prop('indeterminate', false);
+	else
+		tmp_coh.find('input[type=checkbox]:visible').prop('indeterminate', true).prop('checked', false);
+
+	if(returnChecked)
+		return dataGetChecked(resourceListSelector);
+}
+
+function groupChBoxClick(obj, resourceListSelector, headerSelector, collectionSelector, groupSelector, returnChecked)
+{
+	var tmp_cg=$(obj).closest(groupSelector);
+	var tmp_cg_chbxs=tmp_cg.find('input[type=checkbox]:visible');
+	var tmp_co_chbxs=tmp_cg.prev().find('input[type=checkbox]:visible');
+
+	if(tmp_cg_chbxs.filter(':checked').length==0)
+		tmp_co_chbxs.prop('checked', false).prop('indeterminate', false);
+	else
+		tmp_co_chbxs.prop('indeterminate', true).prop('checked', false);
+
+	return collectionChBoxClick(tmp_co_chbxs, resourceListSelector, headerSelector, collectionSelector, null, returnChecked);
+}
+
 // Escape vCalendar value - RFC2426 (Section 2.4.2)
 function vcalendarEscapeValue(inputValue)
 {
-	return (inputValue==undefined ? '' : inputValue).replace(/(,|;|\\)/g,"\\$1").replace(/\n/g,'\\n');
+	return (inputValue==undefined ? '' : inputValue).replace(vCalendar.pre['escapeRex'],"\\$1").replace(vCalendar.pre['escapeRex2'],'\\n');
 }
 
 // Unescape vCalendar value - RFC2426 (Section 2.4.2)

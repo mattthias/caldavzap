@@ -1,6 +1,6 @@
 /*
 CalDavZAP - the open source CalDAV Web Client
-Copyright (C) 2011-2013
+Copyright (C) 2011-2014
     Jan Mate <jan.mate@inf-it.com>
     Andrej Lezo <andrej.lezo@inf-it.com>
     Matej Mihalik <matej.mihalik@inf-it.com>
@@ -158,7 +158,7 @@ function processByDay(byDaysIn,date,newDates,start,interval,count,uid,frequency,
 	for(var p=0;p<byDays.length;p++)
 	{
 		var insertIndex = firstDates.length;
-		var checkString = byDays[p].match('[-+]?[0-9]*');
+		var checkString = byDays[p].match(vCalendar.pre['+/-number']);
 		byDays[p] = byDays[p].replace(checkString[0],'');
 				
 		byDays[p] = byDays[p].replace('MO',1).replace('TU',2).replace('WE',3).replace('TH',4).replace('FR',5).replace('SA',6).replace('SU',0);
@@ -394,8 +394,10 @@ function processRule(vcalendar,start,pars,dates,frequency,deadLine,interval,uid,
 			else if(ruleString.indexOf('BYMONTH=')==-1 && ruleString.indexOf('BYMONTHDAY=')==-1)
 			{
 				var checkDate = new Date(start.getTime());
-				
-				while(checkDate < deadLine)
+				var newDead = new Date(deadLine.getTime());
+				newDead.setDate(1);
+				newDead.setMonth(newDead.getMonth()+1);
+				while(checkDate < newDead)
 				{
 					//for(var j=0;j<byDayList.length;j++)
 					//{
@@ -446,7 +448,7 @@ function processRule(vcalendar,start,pars,dates,frequency,deadLine,interval,uid,
 					for(var j=0;j<byDayList.length;j++)
 					{
 						var newDates = new Array();
-						var checkString = byDayList[j].match('[-+]?[0-9]*');
+						var checkString = byDayList[j].match(vCalendar.pre['+/-number']);
 						byDayList[j]=byDayList[j].replace(checkString[0],'');
 						byDayList[j]=byDayList[j].replace('MO',1).replace('TU',2).replace('WE',3).replace('TH',4).replace('FR',5).replace('SA',6).replace('SU',0);
 						if(checkString[0]!="")
@@ -518,7 +520,7 @@ function processRule(vcalendar,start,pars,dates,frequency,deadLine,interval,uid,
 	pars.splice(delIndex,1);
 	return processRule(vcalendar,start,pars,newDates,frequency,deadLine,interval,uid,rCount,eventStart,wkst);
 }
-function applyTimezone(previousTimezone)
+function applyTimezone(previousTimezone,isEventLocal)
 {
 	updateMainLoaderTextTimezone();
 	$('#MainLoader').show();
@@ -529,7 +531,7 @@ function applyTimezone(previousTimezone)
 	var todoCollections=globalResourceCalDAVList.TodoCollections;
 	var calendarCount=0, calendarCounter=0;
 	var todoCount=0, todoCounter=0;
-	
+
 	for(var i=0;i<collections.length;i++)
 		if(collections[i].uid!=undefined)
 			calendarCount++;
@@ -539,7 +541,7 @@ function applyTimezone(previousTimezone)
 
 	var eventsArray=globalEventList.displayEventsArray;
 	var todosArray=globalEventList.displayTodosArray;
-	
+
 	for(var i=0;i<collections.length;i++)
 		if(collections[i].uid!=undefined)
 		{
@@ -555,7 +557,14 @@ function applyTimezone(previousTimezone)
 						actualOffset=getOffsetByTZ(globalSessionTimeZone, dateStart).getSecondsFromOffset();
 					else
 						actualOffset=dateStart.getTimezoneOffset()*60*-1;
-					var intOffset=(actualOffset-previousOffset)*1000;
+//if timezonesupport is turned off go to local
+					if(typeof isEventLocal!='undefined')
+						actualOffset=getOffsetByTZ(eventsArray[collections[i].uid][j].timeZone, dateStart).getSecondsFromOffset();
+
+					if(typeof isEventLocal!='undefined' && !isEventLocal)
+						var intOffset=(previousOffset-actualOffset)*1000;
+					else
+						var intOffset=(actualOffset-previousOffset)*1000;
 					eventsArray[collections[i].uid][j].start.setTime(eventsArray[collections[i].uid][j].start.getTime()+intOffset);
 
 					if(eventsArray[collections[i].uid][j].end)
@@ -567,7 +576,7 @@ function applyTimezone(previousTimezone)
 						{
 							for(var k=0; k<calEvent.alertTimeOut.length; k++)
 								clearTimeout(calEvent.alertTimeOut[k]);
-		
+
 							var aTime='', now=new Date();
 							for(var alarmIterator=0;alarmIterator<calEvent.alertTime.length;alarmIterator++)
 								{
@@ -583,12 +592,19 @@ function applyTimezone(previousTimezone)
 											actualOffset=getOffsetByTZ(globalSessionTimeZone, $.fullCalendar.parseDate(calEvent.alertTime[alarmIterator])).getSecondsFromOffset();
 										else
 											actualOffset=$.fullCalendar.parseDate(calEvent.alertTime[alarmIterator]).getTimezoneOffset()*60*-1;
-										var intOffset=(actualOffset-previousOffset)*1000;
+
+										if(typeof isEventLocal!='undefined')
+											actualOffset=getOffsetByTZ(eventsArray[collections[i].uid][j].timeZone, $.fullCalendar.parseDate(calEvent.alertTime[alarmIterator])).getSecondsFromOffset();
+
+										if(typeof isEventLocal!='undefined' && !isEventLocal)
+											var intOffset=(previousOffset-actualOffset)*1000;
+										else
+											var intOffset=(actualOffset-previousOffset)*1000;
 
 										aTime=new Date($.fullCalendar.parseDate(calEvent.alertTime[alarmIterator]).getTime()+intOffset);
 										eventsArray[collections[i].uid][j].alertTime[alarmIterator]=$.fullCalendar.formatDate(aTime, "yyyy-MM-dd HH:mm:ss");
 									}
-									
+
 									if(aTime>now)
 									{
 										var delay=aTime-now;
@@ -604,16 +620,14 @@ function applyTimezone(previousTimezone)
 				calendarCounter++;
 				if(calendarCounter==calendarCount)
 				{
-					$('#calendar').fullCalendar('refetchEvents');
+					refetchCalendarEvents();
 					eventsDone=true;
 					if(todosDone)
-					{
 						$('#MainLoader').hide();
-					}
 				}
 			},10,i);
 		}
-		
+
 		for(var i=0;i<todoCollections.length;i++)
 		if(todoCollections[i].uid!=undefined)
 		{
@@ -645,7 +659,14 @@ function applyTimezone(previousTimezone)
 							actualOffset=getOffsetByTZ(globalSessionTimeZone, dateEnd).getSecondsFromOffset();
 						else
 							actualOffset=dateEnd.getTimezoneOffset()*60*-1;
-						var intOffset=(actualOffset-previousOffset)*1000;
+
+						if(typeof isEventLocal!='undefined')
+							actualOffset=getOffsetByTZ(todosArray[todoCollections[i].uid][j].timeZone, dateStart).getSecondsFromOffset();
+
+						if(typeof isEventLocal!='undefined' && !isEventLocal)
+							var intOffset=(previousOffset-actualOffset)*1000;
+						else
+							var intOffset=(actualOffset-previousOffset)*1000;
 						todosArray[todoCollections[i].uid][j].end.setTime(todosArray[todoCollections[i].uid][j].end.getTime()+intOffset);
 					}
 
@@ -685,13 +706,20 @@ function applyTimezone(previousTimezone)
 											actualOffset=getOffsetByTZ(globalSessionTimeZone, $.fullCalendar.parseDate(todoEvent.alertTime[alarmIterator])).getSecondsFromOffset();
 										else
 											actualOffset=$.fullCalendar.parseDate(todoEvent.alertTime[alarmIterator]).getTimezoneOffset()*60*-1;
-										var intOffset=(actualOffset-previousOffset)*1000;
+
+										if(typeof isEventLocal!='undefined')
+											actualOffset=getOffsetByTZ(todosArray[todoCollections[i].uid][j].timeZone, $.fullCalendar.parseDate(todoEvent.alertTime[alarmIterator])).getSecondsFromOffset();
+
+										if(typeof isEventLocal!='undefined' && !isEventLocal)
+											var intOffset=(previousOffset-actualOffset)*1000;
+										else
+											var intOffset=(actualOffset-previousOffset)*1000;
 
 										aTime=new Date($.fullCalendar.parseDate(todoEvent.alertTime[alarmIterator]).getTime()+intOffset);
 										todosArray[todoCollections[i].uid][j].alertTime[alarmIterator]=$.fullCalendar.formatDate(aTime, "yyyy-MM-dd HH:mm:ss");
 										now=new Date();
 									}
-									
+
 									if(aTime>now)
 									{
 										var delay=aTime-now;
@@ -707,12 +735,10 @@ function applyTimezone(previousTimezone)
 				todoCounter++;
 				if(todoCounter==todoCount)
 				{
-					$('#todoList').fullCalendar('refetchEvents');
+					refetchTodoEvents();
 					todosDone=true;
 					if(eventsDone)
-					{
 						$('#MainLoader').hide();
-					}
 				}
 			},10,i);
 		}
@@ -911,6 +937,31 @@ function getOffsetByTZ(tZone, date,uid)
 		else if(actualStandardComponent)
 			offset=actualStandardComponent.offsetTo;
 	}
+	else if(tZone == 'local')
+		offset = getStringLocalOffset(date);
+	return offset;
+}
+
+function getStringLocalOffset(date)
+{
+	var offset = '+0000';
+	var localOffset = date.getTimezoneOffset();
+	if(localOffset>0)
+	{
+		var hours = Math.floor(localOffset/60);
+		var minutes = localOffset - hours*60;
+		offset = '-' + (hours<10 ? '0'+hours : hours);
+		offset += (minutes<10 ? '0'+minutes : minutes);
+	}
+	else if(localOffset<0)
+	{
+		localOffset = localOffset*-1;
+		var hours = Math.floor(localOffset/60);
+		var minutes = localOffset - hours*60;
+		offset = '+' + (hours<10 ? '0'+hours : hours);
+		offset += (minutes<10 ? '0'+minutes : minutes);
+	}
+
 	return offset;
 }
 
@@ -1263,7 +1314,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 				{
 					exDate=$('#recurrenceID').val().parseComnpactISO8601();
 					if(!$('#allday').prop('checked'))
-						if(globalTimeZoneSupport)
+						if(globalSettings.timezonesupport)
 							sel_option=$('#timezone').val();
 										
 					if(sel_option!='local')
@@ -1376,7 +1427,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 
 	if(!$('#allday').prop('checked'))
 	{
-		if(globalTimeZoneSupport)
+		if(globalSettings.timezonesupport)
 			sel_option=$('#timezone').val();
 		//else
 		//{
@@ -1397,7 +1448,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 			timeZoneAttr=';'+vcalendarEscapeValue('TZID='+sel_option);
 
 		var timezoneComponent='';
-		if((typeof globalRewriteTimezoneComponent!='undefined' && globalRewriteTimezoneComponent) || !vCalendar.tplM['unprocessedVTIMEZONE'])
+		if(globalSettings.rewritetimezonecomponent || !vCalendar.tplM['unprocessedVTIMEZONE'])
 		{
 			if(tzArray.indexOf(sel_option)==-1)
 				timezoneComponent=buildTimezoneComponent(sel_option);
@@ -1576,10 +1627,10 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 			{
 				frequency='WEEKLY';
 				byDay=';BYDAY=';
-				if(typeof globalWeekendDays!='undefined' && globalWeekendDays!=null && globalWeekendDays.length>0)
+				if(globalSettings.weekenddays.length>0)
 				{
 					for(var i=0;i<7;i++)
-						if(globalWeekendDays.indexOf(i)==-1)
+						if(globalSettings.weekenddays.indexOf(i)==-1)
 							byDay+=i+',';
 					byDay=byDay.substring(0,byDay.length-1);
 					byDay=byDay.replace(1,'MO').replace(2,'TU').replace(3,'WE').replace(4,'TH').replace(5,'FR').replace(6,'SA').replace(0,'SU');
@@ -1594,10 +1645,10 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 			{
 				frequency='WEEKLY';
 				byDay=';BYDAY=';
-				if(typeof globalWeekendDays!='undefined' && globalWeekendDays!=null && globalWeekendDays.length>0)
+				if(globalSettings.weekenddays.length>0)
 				{
-					for(var i=0;i<globalWeekendDays.length;i++)
-						byDay+=globalWeekendDays[i]+',';
+					for(var i=0;i<globalSettings.weekenddays.length;i++)
+						byDay+=globalSettings.weekenddays[i]+',';
 					byDay=byDay.substring(0,byDay.length-1);
 					byDay=byDay.replace(1,'MO').replace(2,'TU').replace(3,'WE').replace(4,'TH').replace(5,'FR').replace(6,'SA').replace(0,'SU');
 				}
@@ -1619,14 +1670,14 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 					byDay=byDay.substring(0,byDay.length-1);
 					
 					byDay=byDay.replace(1,'MO').replace(2,'TU').replace(3,'WE').replace(4,'TH').replace(5,'FR').replace(6,'SA').replace(0,'SU');
-					if(typeof globalMozillaSupport=='undefined' || globalMozillaSupport==null || !globalMozillaSupport)
+					if(globalSettings.mozillasupport==null || !globalSettings.mozillasupport)
 						if(realEvent!='')
 						{
 							if(realEvent.wkst!='')
 								wkst=';WKST='+realEvent.wkst.replace(1,'MO').replace(2,'TU').replace(3,'WE').replace(4,'TH').replace(5,'FR').replace(6,'SA').replace(0,'SU');
 						}
 						else
-							wkst=';WKST='+((typeof globalDatepickerFirstDayOfWeek=='undefined' || globalDatepickerFirstDayOfWeek==null) ? 1 : globalDatepickerFirstDayOfWeek).toString().replace(1,'MO').replace(2,'TU').replace(3,'WE').replace(4,'TH').replace(5,'FR').replace(6,'SA').replace(0,'SU');
+							wkst=';WKST='+globalSettings.datepickerfirstdayofweek.toString().replace(1,'MO').replace(2,'TU').replace(3,'WE').replace(4,'TH').replace(5,'FR').replace(6,'SA').replace(0,'SU');
 				}
 			}
 			else if(frequency=='CUSTOM_MONTHLY')
@@ -1641,29 +1692,29 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 					switch(monthCustomOption)
 					{
 						case 'every':
-										byDayFirstPart='';
-										break;
+							byDayFirstPart='';
+							break;
 						case 'first':
-										byDayFirstPart='1';
-										break;
+							byDayFirstPart='1';
+							break;
 						case 'second':
-										byDayFirstPart='2';
-										break;
+							byDayFirstPart='2';
+							break;
 						case 'third':
-										byDayFirstPart='3';
-										break;
+							byDayFirstPart='3';
+							break;
 						case 'fourth':
-										byDayFirstPart='4';
-										break;
+							byDayFirstPart='4';
+							break;
 						case 'fifth':
-										byDayFirstPart='5';
-										break;
+							byDayFirstPart='5';
+							break;
 						case 'last':
-										byDayFirstPart='-1';
-										break;
+							byDayFirstPart='-1';
+							break;
 						default:
-										byDayFirstPart='';
-										break;
+							byDayFirstPart='';
+							break;
 					}
 					byDay+= byDayFirstPart+$('#repeat_month_custom_select2').val();
 				}
@@ -1673,33 +1724,33 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 					switch(monthCustomOption)
 					{
 						case 'every':
-										monthDay=';BYMONTHDAY=';
-										for(var p=1;p<32;p++)
-											monthDay+=p+',';
-										monthDay=monthDay.substring(0,monthDay.length-1);
-										break;
+							monthDay=';BYMONTHDAY=';
+							for(var p=1;p<32;p++)
+								monthDay+=p+',';
+							monthDay=monthDay.substring(0,monthDay.length-1);
+							break;
 						case 'first':
-										monthDay=';BYMONTHDAY=1';
-										break;
+							monthDay=';BYMONTHDAY=1';
+							break;
 						case 'second':
-										monthDay=';BYMONTHDAY=2';
-										break;
+							monthDay=';BYMONTHDAY=2';
+							break;
 						case 'third':
-										monthDay=';BYMONTHDAY=3';
-										break;
+							monthDay=';BYMONTHDAY=3';
+							break;
 						case 'fourth':
-										monthDay=';BYMONTHDAY=4';
-										break;
+							monthDay=';BYMONTHDAY=4';
+							break;
 						case 'fifth':
-										monthDay=';BYMONTHDAY=5';
-										break;
+							monthDay=';BYMONTHDAY=5';
+							break;
 						case 'last':
-										monthDay=';BYMONTHDAY=-1';
-										break;
+							monthDay=';BYMONTHDAY=-1';
+							break;
 						default:
-										byDayFirstPart='';
-										monthDay='';
-										break;
+							byDayFirstPart='';
+							monthDay='';
+							break;
 					}
 				}
 				else
@@ -1740,30 +1791,30 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 					switch(monthCustomOption)
 					{
 						case 'every':
-										byDayFirstPart='';
-										break;
+							byDayFirstPart='';
+							break;
 						case 'first':
-										byDayFirstPart='1';
-										break;
+							byDayFirstPart='1';
+							break;
 						case 'second':
-										byDayFirstPart='2';
-										break;
+							byDayFirstPart='2';
+							break;
 						case 'third':
-										byDayFirstPart='3';
-										break;
+							byDayFirstPart='3';
+							break;
 						case 'fourth':
-										byDayFirstPart='4';
-										break;
+							byDayFirstPart='4';
+							break;
 						case 'fifth':
-										byDayFirstPart='5';
-										break;
+							byDayFirstPart='5';
+							break;
 						case 'last':
-										byDayFirstPart='-1';
-										break;
+							byDayFirstPart='-1';
+							break;
 						default:
-										byDayFirstPart='';
-										break;
-					}	
+							byDayFirstPart='';
+							break;
+					}
 					byDay+= byDayFirstPart+$('#repeat_month_custom_select2').val();
 				}
 				else if(monthCustomOption!='custom' && $('#repeat_year_custom_select2').val()=='DAY')
@@ -1772,33 +1823,33 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 					switch(monthCustomOption)
 					{
 						case 'every':
-										monthDay=';BYMONTHDAY=';
-										for(var p=1;p<32;p++)
-											monthDay+=p+',';
-										monthDay=monthDay.substring(0,monthDay.length-1);
-										break;
+							monthDay=';BYMONTHDAY=';
+							for(var p=1;p<32;p++)
+								monthDay+=p+',';
+							monthDay=monthDay.substring(0,monthDay.length-1);
+							break;
 						case 'first':
-										monthDay=';BYMONTHDAY=1';
-										break;
+							monthDay=';BYMONTHDAY=1';
+							break;
 						case 'second':
-										monthDay=';BYMONTHDAY=2';
-										break;
+							monthDay=';BYMONTHDAY=2';
+							break;
 						case 'third':
-										monthDay=';BYMONTHDAY=3';
-										break;
+							monthDay=';BYMONTHDAY=3';
+							break;
 						case 'fourth':
-										monthDay=';BYMONTHDAY=4';
-										break;
+							monthDay=';BYMONTHDAY=4';
+							break;
 						case 'fifth':
-										monthDay=';BYMONTHDAY=5';
-										break;
+							monthDay=';BYMONTHDAY=5';
+							break;
 						case 'last':
-										monthDay=';BYMONTHDAY=-1';
-										break;
+							monthDay=';BYMONTHDAY=-1';
+							break;
 						default:
-										byDayFirstPart='';
-										monthDay='';
-										break;
+							byDayFirstPart='';
+							monthDay='';
+							break;
 					}
 				}
 				else
@@ -1830,7 +1881,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 
 			if($('#repeat_end_details').val()=="on_date")
 			{
-				var dateUntil=$.datepicker.parseDate(globalSessionDatepickerFormat, $('#repeat_end_date').val());
+				var dateUntil=$.datepicker.parseDate(globalSettings.datepickerformat, $('#repeat_end_date').val());
 				var datetime_until='';
 				if(!$('#allday').prop('checked'))
 				{
@@ -1838,7 +1889,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 					dateUntil.setHours(tForR.getHours());
 					dateUntil.setMinutes(tForR.getMinutes());
 					dateUntil.setSeconds(tForR.getSeconds());
-					if(globalTimeZoneSupport && sel_option in timezones)
+					if(globalSettings.timezonesupport && sel_option in timezones)
 						var valOffsetFrom=getOffsetByTZ(sel_option, dateUntil);
 					if(valOffsetFrom)
 					{
@@ -1861,7 +1912,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 
 			if(realEvent.repeatStart)
 			{
-				var a=$.datepicker.parseDate(globalSessionDatepickerFormat, $('#date_from').val());
+				var a=$.datepicker.parseDate(globalSettings.datepickerformat, $('#date_from').val());
 				var repeatStart=realEvent.repeatStart;
 				var b=new Date(1970,1,1,0,0,0);
 				if(!$('#allday').prop('checked'))
@@ -1981,14 +2032,14 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 								process_elem=process_elem.replace('##:::##params_wsc##:::##', '');
 							}
 							
-							var dateTo=$.datepicker.parseDate(globalSessionDatepickerFormat, $(".message_date_input[data-id="+(t+1)+"]").val());
+							var dateTo=$.datepicker.parseDate(globalSettings.datepickerformat, $(".message_date_input[data-id="+(t+1)+"]").val());
 							var datetime_to=$.fullCalendar.formatDate(dateTo, 'yyyy-MM-dd');
 							var aDate=new Date(Date.parse("01/02/1990, "+$(".message_time_input[data-id="+(t+1)+"]").val() ));
 							var time_to=$.fullCalendar.formatDate(aDate, 'HH:mm:ss');
 							
 							var alarmDT=$.fullCalendar.parseDate(datetime_to+'T'+time_to);
 							
-							if(globalTimeZoneSupport)
+							if(globalSettings.timezonesupport)
 								sel_option=$('#timezone').val();
 							
 							if($('.timezone_row').css('display')=='none')
@@ -2082,7 +2133,7 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 						vCalendarText+=process_elem;
 						*/
 					}
-					if((typeof vCalendar.tplM['unprocessedVALARM']!='undefined') && (vCalendar.tplM['unprocessedVALARM']!='') && (vCalendar.tplM['unprocessedVALARM']!=null))
+					if((typeof vCalendar.tplM['unprocessedVALARM']!='undefined' && typeof vCalendar.tplM['unprocessedVALARM'][t]!='undefined') && (vCalendar.tplM['unprocessedVALARM'][t]!='') && (vCalendar.tplM['unprocessedVALARM'][t]!=null))
 					{
 						tmp=vCalendar.tplM['unprocessedVALARM'][t].replace(RegExp('^\r\n'), '');
 						if(tmp.indexOf('\r\n')==0)
@@ -2283,8 +2334,8 @@ function dataToVcalendar(accountUID, inputUID, inputEtag, delUID,isFormHidden, d
 	}
 
 	var datetime_from='', datetime_to='';
-	var a=$.datepicker.parseDate(globalSessionDatepickerFormat, $('#date_from').val());
-	var a2=$.datepicker.parseDate(globalSessionDatepickerFormat, $('#date_to').val());
+	var a=$.datepicker.parseDate(globalSettings.datepickerformat, $('#date_from').val());
+	var a2=$.datepicker.parseDate(globalSettings.datepickerformat, $('#date_to').val());
 	var b=new Date(1970, 1, 1, 0, 0, 0);
 	if(datetime_from=='')
 		datetime_from=$.fullCalendar.formatDate(a, 'yyyyMMdd');
@@ -2615,8 +2666,8 @@ function fullVcalendarToData(inputEvent)
 
 		if(parsed[1]!='')
 		{
-			re=parsed[1].replace('.', '\\..*')+'\r\n';
-			while ((vcalendar_element_related=vcalendar.match(RegExp('\r\n'+re, 'm')))!=null)
+			var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+			while ((vcalendar_element_related=vcalendar.match(re))!=null)
 			{
 				// append the parameter to its parent
 				vCalendar.tplM['contentline_CALSCALE'][0]+=vcalendar_element_related[0].substr(2);
@@ -2640,8 +2691,8 @@ function fullVcalendarToData(inputEvent)
 
 		if(parsed[1]!='')
 		{
-			re=parsed[1].replace('.', '\\..*')+'\r\n';
-			while ((vcalendar_element_related=vcalendar.match(RegExp('\r\n'+re, 'm')))!=null)
+			var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+			while ((vcalendar_element_related=vcalendar.match(re))!=null)
 			{
 				// append the parameter to its parent
 				vCalendar.tplM['contentline_VERSION'][0]+=vcalendar_element_related[0].substr(2);
@@ -2663,8 +2714,8 @@ function fullVcalendarToData(inputEvent)
 		vcalendar=vcalendar.replace(vcalendar_element[0], '\r\n');
 		if(parsed[1]!='')
 		{
-			re=parsed[1].replace('.', '\\..*')+'\r\n';
-			while ((vcalendar_element_related=vcalendar.match(RegExp('\r\n'+re, 'm')))!=null)
+			var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+			while ((vcalendar_element_related=vcalendar.match(re))!=null)
 			{
 				// append the parameter to its parent
 				vCalendar.tplM['contentline_PRODID'][0]+=vcalendar_element_related[0].substr(2);
@@ -2726,8 +2777,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_SUMMARY'][0]+=vcalendar_element_related[0].substr(2);
@@ -2750,8 +2801,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_TRANSP'][0]+=vcalendar_element_related[0].substr(2);
@@ -2761,6 +2812,7 @@ function fullVcalendarToData(inputEvent)
 			}
 		}
 		
+		vcalendar_element=vevent.match(RegExp('\r\n'+vCalendar.re['contentline_PRIORITY'], 'mi'));
 		if(vcalendar_element!=null)
 		{
 			parsed=vcalendar_element[0].match(vCalendar.pre['contentline_parse']);
@@ -2776,8 +2828,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_PRIORITY'][0]+=vcalendar_element_related[0].substr(2);
@@ -2801,8 +2853,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_LOCATION'][0]+=vcalendar_element_related[0].substr(2);
@@ -2826,8 +2878,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_URL'][0]+=vcalendar_element_related[0].substr(2);
@@ -2900,17 +2952,17 @@ function fullVcalendarToData(inputEvent)
 								parString+=';'+pars[i];
 						}
 						vCalendar.tplM['contentline_TRIGGER'][j]=vCalendar.tplM['contentline_TRIGGER'][j].replace(/##:::##params_wsc##:::##/g, parString);
-						alarmArray[j]=alarmArray[j].replace(trigger[0], '\r\n');
+						alarmArray[j]=alarmArray[j].replace(trigger[0], '');
 
 						if(parsed[1]!='')
 						{
-							re=parsed[1].replace('.', '\\..*')+'\r\n';
-							while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+							var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+							while ((vcalendar_element_related=vevent.match(re))!=null)
 							{
 								// append the parameter to its parent
 								vCalendar.tplM['contentline_TRIGGER'][j]+=vcalendar_element_related[0].substr(2);
 								// remove the processed parameter
-								vevent=vevent.replace(vcalendar_element_related[0], '\r\n');
+								vevent=vevent.replace(vcalendar_element_related[0], '');
 							}
 						}
 					}
@@ -2921,16 +2973,16 @@ function fullVcalendarToData(inputEvent)
 						vCalendar.tplM['contentline_VANOTE'][j]=vCalendar.tplC['contentline_VANOTE'];
 						vCalendar.tplM['contentline_VANOTE'][j]=vCalendar.tplM['contentline_VANOTE'][j].replace(/##:::##group_wd##:::##/g, parsed[1]);
 						vCalendar.tplM['contentline_VANOTE'][j]=vCalendar.tplM['contentline_VANOTE'][j].replace(/##:::##params_wsc##:::##/g, parsed[3]);
-						alarmArray[j]=alarmArray[j].replace(note[0], '\r\n');
+						alarmArray[j]=alarmArray[j].replace(note[0], '');
 						if(parsed[1]!='')
 						{
-							re=parsed[1].replace('.', '\\..*')+'\r\n';
-							while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+							var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+							while ((vcalendar_element_related=vevent.match(re))!=null)
 							{
 								// append the parameter to its parent
 								vCalendar.tplM['contentline_VANOTE'][0]+=vcalendar_element_related[0].substr(2);
 								// remove the processed parameter
-								vevent=vevent.replace(vcalendar_element_related[0], '\r\n');
+								vevent=vevent.replace(vcalendar_element_related[0], '');
 							}
 						}
 					}
@@ -2942,17 +2994,17 @@ function fullVcalendarToData(inputEvent)
 						vCalendar.tplM['contentline_ACTION'][j]=vCalendar.tplC['contentline_ACTION'];
 						vCalendar.tplM['contentline_ACTION'][j]=vCalendar.tplM['contentline_ACTION'][j].replace(/##:::##group_wd##:::##/g, parsed[1]);
 						vCalendar.tplM['contentline_ACTION'][j]=vCalendar.tplM['contentline_ACTION'][j].replace(/##:::##params_wsc##:::##/g, parsed[3]);
-						alarmArray[j]=alarmArray[j].replace(action[0], '\r\n');
+						alarmArray[j]=alarmArray[j].replace(action[0], '');
 
 						if(parsed[1]!='')
 						{
-							re=parsed[1].replace('.', '\\..*')+'\r\n';
-							while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+							var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+							while ((vcalendar_element_related=vevent.match(re))!=null)
 							{
 								// append the parameter to its parent
 								vCalendar.tplM['contentline_ACTION'][0]+=vcalendar_element_related[0].substr(2);
 								// remove the processed parameter
-								vevent=vevent.replace(vcalendar_element_related[0], '\r\n');
+								vevent=vevent.replace(vcalendar_element_related[0], '');
 							}
 						}
 					}
@@ -2978,8 +3030,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_NOTE'][0]+=vcalendar_element_related[0].substr(2);
@@ -3004,8 +3056,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_CLASS'][0]+=vcalendar_element_related[0].substr(2);
@@ -3029,8 +3081,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_STATUS'][0]+=vcalendar_element_related[0].substr(2);
@@ -3062,8 +3114,8 @@ function fullVcalendarToData(inputEvent)
 			vevent=vevent.replace(vcalendar_element[0], '\r\n');
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_REC_ID'][0]+=vcalendar_element_related[0].substr(2);
@@ -3109,8 +3161,8 @@ function fullVcalendarToData(inputEvent)
 				vevent=vevent.replace(vcalendar_element[0], '\r\n');
 				if(parsed[1]!='')
 				{
-					re=parsed[1].replace('.', '\\..*')+'\r\n';
-					while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+					var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+					while ((vcalendar_element_related=vevent.match(re))!=null)
 					{
 						// append the parameter to its parent
 						vCalendar.tplM['contentline_EXDATE'][i]+=vcalendar_element_related[0].substr(2);
@@ -3141,8 +3193,8 @@ function fullVcalendarToData(inputEvent)
 			vevent=vevent.replace(vcalendar_element[0], '\r\n');
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_E_DTEND'][0]+=vcalendar_element_related[0].substr(2);
@@ -3171,8 +3223,8 @@ function fullVcalendarToData(inputEvent)
 			vevent=vevent.replace(vcalendar_element[0], '\r\n');
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_E_DTSTART'][0]+=vcalendar_element_related[0].substr(2);
@@ -3203,8 +3255,8 @@ function fullVcalendarToData(inputEvent)
 			vevent=vevent.replace(vcalendar_element[0], '\r\n');
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_RRULE'][0]+=vcalendar_element_related[0].substr(2);
@@ -3227,8 +3279,8 @@ function fullVcalendarToData(inputEvent)
 			vevent=vevent.replace(vcalendar_element[0], '\r\n');
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_UID'][0]+=vcalendar_element_related[0].substr(2);
@@ -3250,8 +3302,8 @@ function fullVcalendarToData(inputEvent)
 			vevent=vevent.replace(vcalendar_element[0], '\r\n');
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_CREATED'][rec]+=vcalendar_element_related[0].substr(2);
@@ -3274,8 +3326,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_LM'][0]+=vcalendar_element_related[0].substr(2);
@@ -3297,8 +3349,8 @@ function fullVcalendarToData(inputEvent)
 
 			if(parsed[1]!='')
 			{
-				re=parsed[1].replace('.', '\\..*')+'\r\n';
-				while ((vcalendar_element_related=vevent.match(RegExp('\r\n'+re, 'm')))!=null)
+				var re=RegExp('\r\n'+parsed[1].replace('.','\\..*')+'\r\n', 'im');
+				while ((vcalendar_element_related=vevent.match(re))!=null)
 				{
 					// append the parameter to its parent
 					vCalendar.tplM['contentline_DTSTAMP'][0]+=vcalendar_element_related[0].substr(2);
@@ -3663,11 +3715,14 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 					{
 						isUntilDate=true;
 						until=pars[i].split('=')[1];
+						//if(until.indexOf('T')==-1)
+//							until+='T000000Z';
+							
 					}
 					else if(pars[i].indexOf('WKST=')!=-1)
 					{
 						wkst=pars[i].split('=')[1].replace(/\d*MO/,1).replace(/\d*TU/,2).replace(/\d*WE/,3).replace(/\d*TH/,4).replace(/\d*FR/,5).replace(/\d*SA/,6).replace(/\d*SU/,0);
-						if(typeof globalMozillaSupport!='undefined' && globalMozillaSupport!=null && globalMozillaSupport)
+						if(globalSettings.mozillasupport!=null && globalSettings.mozillasupport)
 							wkst='';
 					}
  					else if(pars[i].indexOf('BYMONTHDAY=')!=-1)
@@ -3725,25 +3780,36 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 						if(parsed_value[h]!='')
 							dtStartTimezone=parsed_value[h];
 					dtStartTimezone=dtStartTimezone.split('=')
-					
+
 					if(start.charAt(start.length-1)=='Z')
 						tzName='UTC';
 					if(dtStartTimezone.length>1 || tzName=='UTC')
 					{
 						if(tzName!='UTC')
 							tzName=$.trim(dtStartTimezone[1]);
-
-						if(globalTimeZoneSupport && tzName in timezones)
+						var finTZ = checkTimezone(tzName);
+						if(finTZ!=null)
+							tzName = finTZ;
+						if(globalSettings.timezonesupport && tzName in timezones)
 						{
 							valOffsetFrom=getOffsetByTZ(tzName, t);
 							intOffset=(getLocalOffset(t)*-1*1000)-valOffsetFrom.getSecondsFromOffset()*1000;
 						}
 					}
-
-					if(tzName)
+					else if(timeZonesEnabled.indexOf(tzName)==-1)
+					{
+						timeZonesEnabled.push('local');
+						processedTimezones.push('local');
+					}
+					if(tzName!='' && tzName != 'local')
 						if(timeZonesEnabled.indexOf(tzName)==-1)
+						{
 							timeZonesEnabled.push(tzName);
+							processedTimezones.push(tzName);
+						}
 				}
+				else
+					tzName = globalSessionTimeZone;
 				realStart=$.fullCalendar.parseDate(help1);
 				inputEvent.start=$.fullCalendar.parseDate(help1);
 				start=$.fullCalendar.parseDate(help1);
@@ -3815,17 +3881,28 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 											tzNameA='UTC';
 										if(dtStartTimezoneA.length>1 || tzNameA=='UTC')
 										{
-											if(tzNameA!='UTC')
+											if(tzNameA!='UTC' && dtStartTimezoneA[0]==';TZID')
 												tzNameA=$.trim(dtStartTimezoneA[1]);
-											if(globalTimeZoneSupport && tzNameA in timezones)
+											var finTZ = checkTimezone(tzNameA);
+											if(finTZ!=null)
+												tzNameA = finTZ;
+											if(globalSettings.timezonesupport && tzNameA in timezones)
 											{
 												var valOffsetFromA=getOffsetByTZ(tzNameA, alarmTimeA);
 												intOffsetA=getOffsetByTZ(tzName, alarmTimeA).getSecondsFromOffset()*1000-valOffsetFromA.getSecondsFromOffset()*1000;
 											}
 										}
-										if(tzNameA)
+										else if(timeZonesEnabled.indexOf(tzName)==-1)
+										{
+											timeZonesEnabled.push('local');
+											processedTimezones.push('local');
+										}
+										if(tzNameA!='' && tzNameA != 'local')
 											if(timeZonesEnabled.indexOf(tzNameA)==-1)
+											{
 												timeZonesEnabled.push(tzNameA);
+												processedTimezones.push(tzNameA);
+											}
 										if(intOffsetA!='')
 											alarmTimeA.setTime(alarmTimeA.getTime()+intOffsetA);
 										alertTime[j]=$.fullCalendar.formatDate(alarmTimeA,"yyyy-MM-dd'T'HH:mm:ss");
@@ -4016,9 +4093,6 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 						}
 					}
 				}
-				
-				
-				
 				if(isDuration)
 				{
 					var st='';
@@ -4050,20 +4124,33 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 					{
 						if(tzName!='UTC')
 							tzName=$.trim(dtStartTimezone[1]);
-
-						if(globalTimeZoneSupport && tzName in timezones)
+						var finTZ = checkTimezone(tzName);
+						if(finTZ!=null)
+							tzName = finTZ;
+						if(globalSettings.timezonesupport && tzName in timezones)
 						{
 							valOffsetFrom=getOffsetByTZ(tzName, t1);
 							intOffset=(getLocalOffset(t1)*-1*1000)-valOffsetFrom.getSecondsFromOffset()*1000;
 						}
 					}
+					else if(timeZonesEnabled.indexOf(tzName)==-1)
+					{
+						timeZonesEnabled.push('local');
+						processedTimezones.push('local');
+					}
 					//realEnd=$.fullCalendar.parseDate(help);
 					//help1+=valOffsetFrom;
 
-					if(tzName)
+					if(tzName!='' && tzName != 'local')
 						if(timeZonesEnabled.indexOf(tzName)==-1)
+						{
 							timeZonesEnabled.push(tzName);
+							processedTimezones.push(tzName);
+						}
 				}
+				else
+					tzName = globalSessionTimeZone;
+				
 				realEnd=$.fullCalendar.parseDate(help);
 				inputEvent.end=$.fullCalendar.parseDate(help);
 				end=$.fullCalendar.parseDate(help);
@@ -4076,11 +4163,12 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 			else
 				return false;
 			
-
-			if(vR.indexOf(rid)==-1 || isChange || isNew)
+			if(globalVisibleCalDAVCollections.indexOf(rid)!=-1 || isChange || isNew)
 			{
 				if(isRepeat)
 				{
+					var futureRLimit = new Date(globalToLoadedLimit.getTime())
+					futureRLimit.setDate(futureRLimit.getDate()+14);
 					var ruleString=vcalendar.match(vCalendar.pre['contentline_RRULE2'])[0].match(vCalendar.pre['contentline_parse'])[4];
 					var isSpecialRule=false;
 					if(ruleString.indexOf('BYMONTH=')!=-1 || ruleString.indexOf('BYMONTHDAY=')!=-1 || ruleString.indexOf('BYDAY=')!=-1)
@@ -4102,7 +4190,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 					var untilDate='',
 					realUntilDate='',
 					realUntil='';
-										
+
 					if(until!=='')
 					{
 						if(isUntilDate)
@@ -4116,7 +4204,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								if(ut.toString()=='Invalid Date')
 									return false;
 								
-								if(globalTimeZoneSupport && tzName in timezones)
+								if(globalSettings.timezonesupport && tzName in timezones)
 									valOffsetFrom=getOffsetByTZ(tzName, ut);
 								if(valOffsetFrom)
 								{
@@ -4147,7 +4235,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 					}
 					else
 					{
-						untilDate=globalMonthlist.staticEndInterval;
+						untilDate=new Date(futureRLimit.getTime());
 						realUntilDate='';
 						inputEvent.untilDate='never';
 					}
@@ -4212,7 +4300,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								var recString = recurrence_id_array[ir].split(';')[0];
 								if(recString.charAt(recString.length-1)=='Z')
 								{
-									if(globalTimeZoneSupport && tzName in timezones)
+									if(globalSettings.timezonesupport && tzName in timezones)
 									{
 										var recValOffsetFrom=getOffsetByTZ(tzName, varDate);
 										var recTime = new Date(recString.parseComnpactISO8601().getTime());
@@ -4263,7 +4351,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								
 							if(pars.indexElementOf('BYMONTH=')!=-1 && pars.indexElementOf('BYMONTHDAY=')==-1 && pars.indexElementOf('BYDAY=')==-1)
 								pars[pars.length] = "BYMONTHDAY="+resStart.getDate();
-							var objR=processRule(vcalendar,resStart,pars.slice(),[resStart],frequencies.indexOf(frequency),globalMonthlist.staticEndInterval,interval,inputEvent.uid,rCount,resStart,wkst)
+							var objR=processRule(vcalendar,resStart,pars.slice(),[resStart],frequencies.indexOf(frequency),futureRLimit,interval,inputEvent.uid,rCount,resStart,wkst)
 							dates=objR.dates;
 							rCount=objR.rCount;
 						}
@@ -4272,8 +4360,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 						{
 							varDate=new Date(dates[idt].getTime());
 							varEndDate=new Date(varDate.getTime()+dayDifference);
-							
-							if((varDate.getTime()-globalMonthlist.staticEndInterval.getTime())>=0)
+							if((varDate.getTime()-futureRLimit)>=0)
 								break;
 							if(untilDate)
 								var count=untilDate-varDate;
@@ -4285,7 +4372,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 							{
 								iterator++;
 								if(frequency=="YEARLY")
-								{									
+								{
 									if(lastYear!=varDate.getFullYear())
 									{
 										lastYear=varDate.getFullYear();
@@ -4293,7 +4380,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 										{
 											rCount++;
 											continue;
-										}			
+										}
 										rCount++;
 									}
 								}
@@ -4306,7 +4393,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 										var recString = recurrence_id_array[ir].split(';')[0];
 										if(recString.charAt(recString.length-1)=='Z')
 										{
-											if(globalTimeZoneSupport && tzName in timezones)
+											if(globalSettings.timezonesupport && tzName in timezones)
 											{
 												var recValOffsetFrom=getOffsetByTZ(tzName, varDate);
 												var recTime = new Date(recString.parseComnpactISO8601().getTime());
@@ -4331,7 +4418,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								if(!all)
 								{
 									var dateStart,dateEnd;
-									if(globalTimeZoneSupport && tzName in timezones)
+									if(globalSettings.timezonesupport && tzName in timezones)
 										valOffsetFrom=getOffsetByTZ(tzName, varDate);
 									realStart=new Date(varDate.getTime());
 									dateStart=new Date(realStart.getTime());
@@ -4454,7 +4541,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								if(byMonthDay!=dayNumberStart)
 									continue;
 
-							if((varDate.getTime()-globalMonthlist.staticEndInterval.getTime())>=0)
+							if((varDate.getTime()-futureRLimit)>=0)
 								break;
 
 							var count=untilDate-varDate;
@@ -4477,7 +4564,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 										var recString = recurrence_id_array[ir].split(';')[0];
 										if(recString.charAt(recString.length-1)=='Z')
 										{
-											if(globalTimeZoneSupport && tzName in timezones)
+											if(globalSettings.timezonesupport && tzName in timezones)
 											{
 												var recValOffsetFrom=getOffsetByTZ(tzName, varDate);
 												var recTime = new Date(recString.parseComnpactISO8601().getTime());
@@ -4487,7 +4574,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 													recTime.setTime(recTime.getTime()+rintOffset);
 												}
 												if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == varDate+stringUID)
-													checkRec=true;
+													checkCont=true;
 											}
 										}
 										else
@@ -4502,7 +4589,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 								if(!all)
 								{
 									var dateStart,dateEnd;
-									if(globalTimeZoneSupport && tzName in timezones)
+									if(globalSettings.timezonesupport && tzName in timezones)
 										valOffsetFrom=getOffsetByTZ(tzName, varDate);
 
 									realStart=new Date(varDate.getTime());

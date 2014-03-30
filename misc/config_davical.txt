@@ -13,9 +13,9 @@
                 #Header always set Access-Control-Allow-Origin "https://www.server.com:8080"
 
                 Header always set Access-Control-Allow-Origin "*"
-                Header always set Access-Control-Allow-Methods "GET,POST,OPTIONS,PROPFIND,REPORT,PUT,MOVE,DELETE,LOCK,UNLOCK"
+                Header always set Access-Control-Allow-Methods "GET,POST,OPTIONS,PROPFIND,PROPPATCH,REPORT,PUT,MOVE,DELETE,LOCK,UNLOCK"
                 Header always set Access-Control-Allow-Headers "User-Agent,Authorization,Content-type,Depth,If-match,If-None-Match,Lock-Token,Timeout,Destination,Overwrite,X-client,X-Requested-With"
-                Header always set Access-Control-Allow-Credentials true
+                Header always set Access-Control-Allow-Credentials false
                 Header always set Access-Control-Expose-Headers "Etag"
 
                 RewriteCond %{HTTP:Access-Control-Request-Method} !^$
