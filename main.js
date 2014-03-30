@@ -55,7 +55,6 @@ var origResourceCalDAVTODOListTemplate=null;
 var origVcalendarTemplate=null;
 var origVtodoTemplate=null;
 var origVtodoLoaderTemplate=null;
-var origLoaderTemplate=null;
 var globalSessionTimeZone=null;
 var globalCalDAVQs=null;
 var globalCalDAVTODOQs=null;
@@ -112,7 +111,7 @@ var globalActiveApp='';
 var globalAvailableAppsArray=new Array();
 var globalEnableAppSwitch=true;
 var globalAppName='CalDavZAP';
-var globalVersion='0.10.0.2';
+var globalVersion='0.10.0.3';
 var globalVersionCheckURL=(location.protocol=='file:' ? 'http:' : location.protocol)+'//www.inf-it.com/versioncheck/'+globalAppName+'/?v='+globalVersion;
 var globalXClientHeader=globalAppName+' '+globalVersion+' (Inf-IT CalDAV Web Client)';
 var globalResourceNumberCount=0;
@@ -1268,7 +1267,6 @@ function localizeCalDAV()
 	$('#CAEvent').html(origVcalendarTemplate);
 	$('#CATodo').html(origVtodoTemplate);
 	$('#todoLoader').html(origVtodoLoaderTemplate);
-	$('#MainLoaderInner').html(origLoaderTemplate);
 	resetSettings();
 	translate();
 	initTimepicker(globalSettings.ampmformat);
@@ -1462,7 +1460,6 @@ function globalMainCalDAV()
 	origVcalendarTemplate = $('#CAEvent .saveLoader').clone().wrap('<div>').parent().html() + $('#repeatConfirmBox').clone().wrap('<div>').parent().html() + $('#event_details_template').clone().wrap('<div>').parent().html();
 	origVtodoTemplate = $('#repeatConfirmBoxTODO').clone().wrap('<div>').parent().html() + $('#todo_details_template').clone().wrap('<div>').parent().html();
 	origVtodoLoaderTemplate=$('#todoLoader .saveLoader').clone().wrap('<div>').parent().html();
-	origLoaderTemplate = $('#MainLoaderInner').clone().wrap('<div>').html();
 
 	for(var i in timezones)
 		timezoneKeys.push(i);
