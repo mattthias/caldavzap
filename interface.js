@@ -747,12 +747,19 @@ function loadRepeatEvents(inputRepeatEvent,prevLimit,toLimit)
 			
 	var td='', td2='';
 	var valOffsetFrom='',intOffset='';
-	var varDate=new Date(inputRepeatEvent.start.getTime());
-	var varEndDate=new Date(inputRepeatEvent.end.getTime());
+	if(inputRepeatEvent.realStart)
+		var varDate=new Date(inputRepeatEvent.realStart.getTime());
+	else
+		var varDate=new Date(inputRepeatEvent.start.getTime());
+	if(inputRepeatEvent.realEnd)
+		var varEndDate=new Date(inputRepeatEvent.realEnd.getTime());
+	else
+		var varEndDate=new Date(inputRepeatEvent.end.getTime());
 	var repeatFromLine=new Date(prevLimit.getFullYear(), prevLimit.getMonth(), prevLimit.getDate(), 0, 0, 0);
 	var repeatCount=inputRepeatEvent.repeatCount;
 	var realRepeatCount=inputRepeatEvent.repeatCount;
 	var byMonthDay=inputRepeatEvent.byMonthDay;
+	var realStart,realEnd;
 	if(inputRepeatEvent.realUntilDate=='')
 		untilDate=toLimit;
 	else
@@ -837,7 +844,7 @@ function loadRepeatEvents(inputRepeatEvent,prevLimit,toLimit)
 									var recTime = new Date(recString.parseComnpactISO8601().getTime());
 									if(recValOffsetFrom)
 									{
-										var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+										var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 										recTime.setTime(recTime.getTime()+rintOffset);
 									}
 									if(recTime.toString()+inputRepeatEvent.rec_id_array[ir].split(';')[1] == varDate+inputRepeatEvent.stringUID)
@@ -993,13 +1000,13 @@ function loadRepeatEvents(inputRepeatEvent,prevLimit,toLimit)
 							{
 								if(globalSettings.timezonesupport && inputRepeatEvent.timeZone in timezones)
 								{
-									var recValOffsetFrom=getOffsetByTZ(tzName, varDate);
+									var recValOffsetFrom=getOffsetByTZ(inputRepeatEvent.timeZone, varDate);
 									var recTime = new Date(recString.parseComnpactISO8601().getTime());
 									if(recValOffsetFrom)
 									{
-										var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+										var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 										recTime.setTime(recTime.getTime()+rintOffset);
-									}
+									}	
 									if(recTime.toString()+inputRepeatEvent.rec_id_array[ir].split(';')[1] == varDate+inputRepeatEvent.stringUID)
 										checkCont=true;
 								}
@@ -1308,13 +1315,13 @@ function loadRepeatTodo(inputRepeatTodo,prevLimit)
 							var recString = inputRepeatTodo.recurrence_id_array[ir].split(';')[0];
 							if(recString.charAt(recString.length-1)=='Z')
 							{
-								if(globalSettings.timezonesupport && tzName in timezones)
+								if(globalSettings.timezonesupport && inputRepeatTodo.tzName in timezones)
 								{
-									var recValOffsetFrom=getOffsetByTZ(tzName, varDate);
+									var recValOffsetFrom=getOffsetByTZ(inputRepeatTodo.tzName, varDate);
 									var recTime = new Date(recString.parseComnpactISO8601().getTime());
 									if(recValOffsetFrom)
 									{
-										var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+										var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 										recTime.setTime(recTime.getTime()+rintOffset);
 									}
 									if(recTime.toString()+inputRepeatTodo.recurrence_id_array[ir].split(';')[1] == varDate+inputRepeatTodo.stringUID)
@@ -1465,13 +1472,13 @@ function loadRepeatTodo(inputRepeatTodo,prevLimit)
 								var recString = inputRepeatTodo.recurrence_id_array[ir].split(';')[0];
 								if(recString.charAt(recString.length-1)=='Z')
 								{
-									if(globalSettings.timezonesupport && tzName in timezones)
+									if(globalSettings.timezonesupport && inputRepeatTodo.tzName in timezones)
 									{
-										var recValOffsetFrom=getOffsetByTZ(tzName, varDate);
+										var recValOffsetFrom=getOffsetByTZ(inputRepeatTodo.tzName, varDate);
 										var recTime = new Date(recString.parseComnpactISO8601().getTime());
 										if(recValOffsetFrom)
 										{
-											var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+											var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 											recTime.setTime(recTime.getTime()+rintOffset);
 										}
 										if(recTime.toString()+inputRepeatTodo.recurrence_id_array[ir].split(';')[1] == varDate+inputRepeatTodo.stringUID)
