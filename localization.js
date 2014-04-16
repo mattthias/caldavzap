@@ -3326,7 +3326,7 @@ localizationCalDAV['tr_TR']=	/* thanks Selcuk Pultar */
 localizationCalDAV['ru_RU']=
 {
 	_default_title_format_month_: 'MMMM yyyy',
-	_default_title_format_week_: 'd{ \'–\' d[ MMM][ yyyy] } MMM yyyy',
+	_default_title_format_week_: 'd MMM yyyy{ \'–\' d MMM yyyy}',
 	_default_title_format_day_: 'd MMM yyyy, dddd',
 	_default_title_format_table_: 'MMM yyyy, ddd',
 	_default_column_format_agenda_: 'd MMM, ddd',
@@ -3337,8 +3337,8 @@ localizationCalDAV['ru_RU']=
 	txtTodo: 'Задачи',
 	txtTodoLists: 'Списки задач',
 	txtSubscribed: 'Подписки',
-	fullCalendarMonth: 'Месяц',
-	fullCalendarMultiWeek: 'Пол-месяца',
+	fullCalendarMonth: 'Шесть недель',
+	fullCalendarMultiWeek: 'Три недели',
 	fullCalendarAgendaWeek: 'Неделя',
 	fullCalendarAgendaDay: 'День',
 	fullCalendarTable: 'Таблица',

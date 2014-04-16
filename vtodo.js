@@ -3457,7 +3457,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 								var recTime = new Date(recString.parseComnpactISO8601().getTime());
 								if(recValOffsetFrom)
 								{
-									var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+									var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 									recTime.setTime(recTime.getTime()+rintOffset);
 								}
 								if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == varDate+stringUID)
@@ -3640,7 +3640,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 									var recTime = new Date(recString.parseComnpactISO8601().getTime());
 									if(recValOffsetFrom)
 									{
-										var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+										var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 										recTime.setTime(recTime.getTime()+rintOffset);
 									}
 									if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == $.fullCalendar.parseDate(realStart)+stringUID)
@@ -3676,7 +3676,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 									var recTime = new Date(recString.parseComnpactISO8601().getTime());
 									if(recValOffsetFrom)
 									{
-										var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+										var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 										recTime.setTime(recTime.getTime()+rintOffset);
 									}
 									if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == $.fullCalendar.parseDate(realEnd)+stringUID)
@@ -3870,7 +3870,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 											var recTime = new Date(recString.parseComnpactISO8601().getTime());
 											if(recValOffsetFrom)
 											{
-												var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+												var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 												recTime.setTime(recTime.getTime()+rintOffset);
 											}
 											if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == $.fullCalendar.parseDate(realStart)+stringUID)
@@ -3903,7 +3903,7 @@ for(var toIt=0; toIt<todoArray.length; toIt++)
 											var recTime = new Date(recString.parseComnpactISO8601().getTime());
 											if(recValOffsetFrom)
 											{
-												var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+												var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 												recTime.setTime(recTime.getTime()+rintOffset);
 											}
 											if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == $.fullCalendar.parseDate(realEnd)+stringUID)

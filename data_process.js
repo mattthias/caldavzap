@@ -4521,7 +4521,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 										var recTime = new Date(recString.parseComnpactISO8601().getTime());
 										if(recValOffsetFrom)
 										{
-											var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+											var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 											recTime.setTime(recTime.getTime()+rintOffset);
 										}
 										if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == varDate+stringUID)
@@ -4614,7 +4614,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 												var recTime = new Date(recString.parseComnpactISO8601().getTime());
 												if(recValOffsetFrom)
 												{
-													var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+													var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 													recTime.setTime(recTime.getTime()+rintOffset);
 												}
 												if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == varDate+stringUID)
@@ -4785,7 +4785,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 												var recTime = new Date(recString.parseComnpactISO8601().getTime());
 												if(recValOffsetFrom)
 												{
-													var rintOffset=valOffsetFrom.getSecondsFromOffset()*1000;
+													var rintOffset=recValOffsetFrom.getSecondsFromOffset()*1000;
 													recTime.setTime(recTime.getTime()+rintOffset);
 												}
 												if(recTime.toString()+recurrence_id_array[ir].split(';')[1] == varDate+stringUID)
@@ -4891,7 +4891,7 @@ function vcalendarToData(inputCollection, inputEvent, isNew)
 
 					if(!checkRepeat)
 						globalEventList.repeatable.splice(globalEventList.repeatable.length, 0, 
-						{collection: inputCollection, wkst:wkst,lastYear:lastYear,rCount:rCount,rulePartsArray:pars.slice(),lastGenDate:lastGenDate,start: start, end:end, title: title, allDay: all, rid: rid, evid: evid, note: note, displayValue: inputEvent.displayValue, alertTime: alertTime, alertNote: alertNote, frequency: frequency, interval: interval, location: location, realUntil: realUntil, realUntilDate: realUntilDate, repeatStart: repeatStart, repeatEnd: repeatEnd, byMonthDay: byMonthDay,realRepeatCount:realRepeatCount, repeatCount: repeatCount, uid: inputEvent.uid, vcalendar: vcalendar, etag: inputEvent.etag, evcolor: inputEvent.evcolor, isDrawn: true,alertTimeOut:alertTimeOut, timeZone:tzName, realStart:realStart, realEnd:realEnd, byDay:byDay, rec_id:rec_id, rec_id_array:recurrence_id_array, exDates:exDates,  stringUID:stringUID, classType:classType,compareString:compareString,priority:priority,status:status});
+						{collection: inputCollection, wkst:wkst,lastYear:lastYear,rCount:rCount,rulePartsArray:pars.slice(),lastGenDate:lastGenDate,start: start, end:end, title: title, allDay: all, rid: rid, evid: evid, note: note, displayValue: inputEvent.displayValue, alertTime: alertTime, alertNote: alertNote, frequency: frequency, interval: interval, location: location, realUntil: realUntil, realUntilDate: realUntilDate, repeatStart: repeatStart, repeatEnd: repeatEnd, byMonthDay: byMonthDay,realRepeatCount:realRepeatCount, repeatCount: repeatCount, uid: inputEvent.uid, vcalendar: vcalendar, etag: inputEvent.etag, evcolor: inputEvent.evcolor, isDrawn: true,alertTimeOut:alertTimeOut, timeZone:tzName, realStart:realStart, realEnd:realEnd, byDay:byDay, rec_id:rec_id, rec_id_array:recurrence_id_array, exDates:exDates,  stringUID:stringUID, classType:classType, avail:avail, hrefUrl:hrefUrl, compareString:compareString,priority:priority,status:status});
 				}
 				else
 				{
